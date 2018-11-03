@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="xmlconf" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="builtin">
+				<Option output="../builtin" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option use_console_runner="0" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="libxmlconf">
+				<Option output="$(TARGET_COMPILER_DIR)/lib/xmlconf" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Debug/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<ExtraCommands>
+					<Add after="cp $(PROJECT_DIR)..\xmlconf.h $(TARGET_COMPILER_DIR)include\altomaltes" />
+					<Mode after="always" />
+				</ExtraCommands>
+			</Target>
+			<Target title="userflex">
+				<Option output="../userflex" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="llist">
+				<Option output="../userflex" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="virtual">
+				<Option output="../userflex" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="01-counter">
+				<Option output="counter" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add directory="L:/altomaltes/xmlconf/" />
+				</Compiler>
+			</Target>
+			<Target title="02-bunch">
+				<Option output="bunch" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add directory="L:/altomaltes/xmlconf/" />
+				</Compiler>
+			</Target>
+			<Target title="03-object">
+				<Option output="object" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add directory="L:/altomaltes/xmlconf/" />
+				</Compiler>
+			</Target>
+			<Target title="04-new">
+				<Option output="new" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add directory="L:/altomaltes/xmlconf/" />
+				</Compiler>
+			</Target>
+			<Target title="05-list">
+				<Option output="list" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add directory="L:/altomaltes/xmlconf/" />
+				</Compiler>
+			</Target>
+			<Target title="06-polymorphic">
+				<Option output="polymorphic" prefix_auto="1" extension_auto="1" />
+				<Option working_dir=".." />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add directory="L:/altomaltes/xmlconf/" />
+				</Compiler>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-g" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="../01-counter.cc">
+			<Option target="01-counter" />
+		</Unit>
+		<Unit filename="../02-bunch.cc">
+			<Option target="02-bunch" />
+		</Unit>
+		<Unit filename="../03-object.cc">
+			<Option target="03-object" />
+		</Unit>
+		<Unit filename="../04-new.cc">
+			<Option target="04-new" />
+		</Unit>
+		<Unit filename="../05-list.cc">
+			<Option target="05-list" />
+		</Unit>
+		<Unit filename="../06-polymorphic.cc">
+			<Option target="06-polymorphic" />
+		</Unit>
+		<Unit filename="../article.doc" />
+		<Unit filename="../intern.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../json.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../keepconf.cc" />
+		<Unit filename="../keepconf.h">
+			<Option target="builtin" />
+			<Option target="libxmlconf" />
+			<Option target="userflex" />
+			<Option target="llist" />
+			<Option target="virtual" />
+		</Unit>
+		<Unit filename="../parse.h">
+			<Option target="builtin" />
+			<Option target="libxmlconf" />
+			<Option target="userflex" />
+			<Option target="llist" />
+			<Option target="virtual" />
+		</Unit>
+		<Unit filename="../xml.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
