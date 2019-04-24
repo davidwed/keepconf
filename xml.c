@@ -183,8 +183,9 @@ static int xmlParse( KeeperRec * xml, const char * dat, int sz  )
          //         , xml->items == INTEGER_NAM ? 0 : xml->items
            //       , xml->idx   == INTEGER_NAM ? 0 : xml->idx
              //     , xml->buffItm, xml->buffNme, xml->buffVal );
+
             pushElement( xml->data
-                       , xml->idx == INTEGER_NAM ? xml->idx : xml->items         /* convey the pair (OBJECT) */
+                       , xml->idx ? xml->idx : xml->items         /* convey the pair (OBJECT) */
                        , xml->buffItm
                        , xml->buffNme
                        , xml->buffVal );

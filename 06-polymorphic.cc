@@ -126,7 +126,6 @@ REGISTERCLASS( ListRec3 )
   KEEPITEM( ownInteger );
 }
 
-KEEPXML( storer06 );  // This does the job ( xml version )
 
 
 /**
@@ -172,6 +171,9 @@ ListRec * createDefaultConfig( )
  * of the nodes as in java.
  */
 
+KEEPXML( storer06 );  // This does the job ( xml version )
+
+//KEEPJSN( storer06 );  // This does the job ( json version )
 
 int main( int argc, char ** argv )
 { if ( !storer06 )     // No config on disk yet, let´s create one of them

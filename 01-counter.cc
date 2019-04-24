@@ -29,8 +29,11 @@
 
 static int counter= 0;
 
-//KEEPXML( counter );  // This does the job ( xml version )
-KEEPJSN( counter );  // This does the job ( json version )
+#ifdef CAP_TYPEOF
+  KEEPJSN( counter );      // This does the job ( xml version )
+#else
+  KEEPJSN( counter, int );  // This does the job ( json version )
+#endif
 
 int main( int argc, char ** argv )
 { printf( "%s has been executed %d times"

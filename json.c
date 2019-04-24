@@ -47,18 +47,23 @@ enum
 
 , PHASE_HUNTVAL
 , PHASE_NUMBER   = 'N'
+, PHASE_TRUE     = 'T'
+, PHASE_FALSE    = 'F'
 , PHASE_STRING   = 'S'
 
 , PHASE_ENDVALUE = '}'
 , PHASE_HUNT     = ','
 
+
 };
 
 
 
-static int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
+int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
 { while( sz-- )
   { char itm= *dat++;
+
+//    fputc( itm, stderr ); fflush( stderr );
 
 /* Build pooible values
  */
@@ -75,7 +80,10 @@ static int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
 
       case PHASE_STRING:
         if ( itm == '"' )
-        { *jsn->ptr= 0;
+        { if ( jsn->ptr == jsn->buffVal )
+          { *jsn->ptr++= " ";             
+          }
+          *jsn->ptr= 0;
           jsn->phase= PHASE_ENDVALUE;
         }
         else
@@ -83,19 +91,30 @@ static int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
         }
       continue;
 
+      case PHASE_TRUE: 
+      case PHASE_FALSE:
+      { if ( itm > 32 )
+        { continue;
+      } }
+        jsn->phase= PHASE_ENDVALUE;
+      break;
+
       case PHASE_NUMBER: switch( itm )
-      { case '.'        :
-        case '0' ... '9':
+      { case '.': 
+        case '0': case '1': case '2': case '3': case '4':   
+	       case '5': case '6': case '7': case '8': case '9':
           *jsn->ptr++= itm;
         continue;
 
-        default: jsn->phase= PHASE_ENDVALUE;
+        default: 
+          jsn->phase= PHASE_ENDVALUE;
+        break;
     } }
 
 /* Remove laying chars
  */
-    switch ( itm )
-    { case 1 ... 32: continue;
+    if ( itm <= 32 )
+    { continue;
     }
 
 /* Take paths
@@ -114,8 +133,8 @@ static int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
         break;
 
         case '{':   /* Object coming from an array */
-          pushElement( jsn->data, jsn->ptr ? jsn->array : 0
-                     , "@"
+          pushElement( jsn->data, jsn->items++
+                     , jsn->buffItm // "@"
                      , jsn->buffNme
                      , jsn->buffVal ); /* Tell enter object  */
         break;
@@ -126,7 +145,8 @@ static int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
 
       case PHASE_ENDN: switch( itm )
       { case ':':
-          jsn->array= INTEGER_NAM; jsn->phase= PHASE_HUNTVAL;
+          jsn->array= INTEGER_NAN;
+          jsn->phase= PHASE_HUNTVAL;
         break;
 
         default: return( JSON_ERR_NAME );
@@ -138,16 +158,26 @@ static int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
       case PHASE_HUNTVAL: switch( itm )
       { case '[':                          /* Catch an array */
           *jsn->buffVal= 0;
-           jsn->array= 0;
+           jsn->array= INTEGER_NAN;
         break;
 
-        case '{':                   /* Enter object */
+        case '{':                          /* Enter object */
           jsn->phase= PHASE_HUNT;
-          pushElement( jsn->data, jsn->array == INTEGER_NAM ? INTEGER_NAM : *jsn->buffNme
-                   , jsn->buffNme
-                   , "class"             /* Tell enter object  */
-                   , "" );     /* Tell enter object  */
-          jsn->ptr= NULL;  /* Yet delivered */
+
+          if ( jsn->array == INTEGER_NAN ) /* Compromised solution. Non array objects can omit typename */
+          { pushElement( jsn->data, INTEGER_NAN /* Start of object */
+                       , jsn->buffNme
+                       , "class"         /* Tell enter object  */
+                       , "" );           /* Tell enter object  */
+            jsn->items= 1;               /* Mark first */
+          }
+          else
+          { strcpy( jsn->buffItm         /* Save object name   */
+                  , jsn->buffNme );
+            jsn->items= jsn->array;      /* Save index         */
+          }
+
+          jsn->ptr= NULL;                /* Yet delivered      */
         break;
 
         case '"':
@@ -155,13 +185,25 @@ static int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
           jsn->phase= PHASE_STRING;
         break;
 
-        case '.'        :
+        case '.': case '-' :
         case '0' ... '9':
           jsn->ptr= jsn->buffVal; *jsn->ptr++= itm;
           jsn->phase= PHASE_NUMBER;
         continue;
 
-        default: return( JSON_ERR_VALUE );
+        case 't': case 'T':
+          jsn->ptr= jsn->buffVal; *jsn->ptr++= '1'; *jsn->ptr= 0;
+          jsn->phase= PHASE_TRUE;
+        continue;
+
+        case 'f': case 'F':
+          jsn->ptr= jsn->buffVal; *jsn->ptr++= '0'; *jsn->ptr= 0;
+          jsn->phase= PHASE_FALSE;
+        continue;
+
+        default: 
+         puts("err");
+         return( JSON_ERR_VALUE );
       }
       break;
 
@@ -171,22 +213,34 @@ static int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
       case PHASE_ENDVALUE: switch( itm )
       { case ']':
           if ( jsn->ptr )
-          { pushElement( jsn->data,    jsn->array      /* Pending value */
+          { pushElement( jsn->data, jsn->array /* Pending value */
                        , jsn->buffNme
                        , jsn->buffItm
-                       , jsn->buffVal ); /* Stamp value */
-            jsn->ptr= NULL;                          /* Mark as delivered */
-            jsn->array= INTEGER_NAM;
+                       , jsn->buffVal );       /* Stamp value */
+            jsn->ptr= NULL;                    /* Mark as delivered */
+            jsn->array= INTEGER_NAN;
           }
         break;
 
         case ',': case '}':
            if ( jsn->ptr )
            { *jsn->ptr=  0;
-             pushElement( jsn->data, jsn->array++    /* Pending value           */
-                      , jsn->buffNme
-                      , ""                         /* No type on leaves       */
-                      , jsn->buffVal );            /* Stamp value             */
+
+             if (*jsn->buffNme== '$')                  /* Metadata */
+             { if ( !strcmp( jsn->buffNme, "$type" ))
+               { pushElement( jsn->data
+                            , jsn->items               /* Saved index */
+                            , jsn->buffItm             /* Saved name */
+                            , "class"
+                            , jsn->buffVal );          /* Tell enter object  */
+
+             } }
+             else
+             { pushElement( jsn->data, jsn->array++  /* Pending value           */
+                          , jsn->buffNme
+                          , ""                      /* No type on leaves       */
+                          , jsn->buffVal );         /* Stamp value             */
+             }
 
              if ( jsn->array > 0 )                 /* Iterating a leave array */
              { jsn->phase= PHASE_HUNTVAL;          /* Close object            */
@@ -225,17 +279,18 @@ static void jsnEnter( KeeperRec * jsn )
       return;
   } }
 
-  if ( jsn->token != INTEGER_NAM )
-  { for( loop= 0                   /* Indent */
+  if ( jsn->token != INTEGER_NAN )
+  { for( loop= 1                   /* Indent */
        ; loop< jsn->level
        ; loop++ )
     { fputs( "  ", jsn->file );
   } }
 
-  int bunch= ( jsn->level - jsn->token ) ?  '{' : ',' ;
+  int bunch= jsn->level ? ( jsn->level - jsn->token ) ?  '{'
+                                                      : ','
+                        : ' ';    // JASON has not global set
 
   jsn->token= jsn->level;
-
 
   if ( !strcmp( jsn->buffItm, "str" ) )
   { brck= '"';
@@ -245,14 +300,14 @@ static void jsnEnter( KeeperRec * jsn )
   { if ( !*jsn->ptr )
     { fprintf( jsn->file, jsn->idx ? "  }\n"  : "  } ]\n" );
 
-      if ( !jsn->level )
-      { fprintf( jsn->file, "}\n" );
-      }
+    //  if ( ! jsn->level <= 0 )        // JASON has not global set
+    //  { fprintf( jsn->file, "}\n" );
+    //  }
 
       return;
     }
 
-    if ( jsn->idx == INTEGER_NAM ) /* Pure value */
+    if ( jsn->idx == INTEGER_NAN ) /* Pure value */
     { fprintf( jsn->file
              , "%c \"%s\": %c%s%c\n"
              , bunch
@@ -260,9 +315,9 @@ static void jsnEnter( KeeperRec * jsn )
              , brck, jsn->ptr
              , brck );
 
-      if ( !jsn->level )
-      { fprintf( jsn->file, "}\n" );
-      }
+  //    if ( !jsn->level ) // JASON has not global set
+  //    { fprintf( jsn->file, "}\n" );
+  //    }
 
       return;
     }
@@ -283,20 +338,34 @@ static void jsnEnter( KeeperRec * jsn )
    { fprintf( jsn->file
             , "%c "
             , bunch );
-     jsn->token= INTEGER_NAM;
+     jsn->token= INTEGER_NAN;
+     strcpy( jsn->buffVal, jsn->buffItm );  /* Type must be stamped */
    }
    else
-   { if ( jsn->idx == INTEGER_NAM )
-     { fprintf( jsn->file
-              , "%c \"%s\":\n"
-              , bunch
-              , jsn->buffNme );
-     }
+   { if ( jsn->idx == INTEGER_NAN )
+     { if ( jsn->level )                  /* JASON has not global set */
+       { if ( *jsn->buffVal )                /* There is a type stamp pending */
+         { fprintf( jsn->file
+                  , "{ \"$type\": \"%s\", "
+                  , jsn->buffVal );
+           *jsn->buffVal= 0;
+         }
+         else
+         { fprintf( jsn->file
+                   , "%c "
+                   , bunch );
+         }
+
+         fprintf( jsn->file
+                 , "\"%s\":\n"
+                 , jsn->buffNme );
+     } } 
      else
      { fprintf( jsn->file
-              , "%c \"%s@%s\": [\n"
+              , "%c \"%s\": [\n"
               , bunch
-              , jsn->buffNme, jsn->buffItm );
+              , jsn->buffNme );
+       strcpy( jsn->buffVal, jsn->buffItm );  /* Type must be stamped */
 } } }
 
 /** Returns the write driver, must be called on token serializing
@@ -320,9 +389,35 @@ ANSIC ObjectKeeper jsnSave( KeeperRec  * jsn
   return( jsnEnter );
 }
 
+ANSIC KeepSvr jsnDone( KeeperRec * keep )
+{ jsonParse( &keep, "}",  1 );
+
+  return( jsnSave );
+}
+
+ANSIC KeepSvr jsnInit( KeeperRec  * keep
+                     , void       * autom 
+                     , const char * name )
+{ char buff[ 256 ]; int sz;
+  
+  keep->phase= PHASE_IDLE;
+  keep->ptr  = NULL;
+  keep->data = autom;
+
+  pushElement( keep->data
+             , INTEGER_NAN
+             , "config"
+             , "style"
+             , "json" );  /* Tell enter object  */
+  sz= sprintf( buff, "{ \"%s\": \n", name ); 
+  jsonParse( keep, buff,  sz );
+
+  return( jsnSave );
+}
+
+
 /** calls pushElement on token discover
  */
-
 ANSIC KeepSvr jsnLoad( const char * name
                      , void       * autom )
 { char * fname= alloca( strlen( name ) + 16 );
@@ -333,32 +428,37 @@ ANSIC KeepSvr jsnLoad( const char * name
 
   if (( file= fopen( fname, "rt" ) ))
   { int sz;
-    char buff[ 256 ];
+    char buff[ 4098 ];
 
-    KeeperRec jsn;
+    KeeperRec keep; jsnInit( &keep, autom, name ); 
 
-    jsn.data = autom;
-    jsn.phase= PHASE_IDLE;
-    jsn.ptr  = NULL;
-
-    pushElement( jsn.data
-               , INTEGER_NAM
-               , "config"
-               , "style"
-               , "json" ); /* Tell enter object  */
     do
     { sz= fread( buff, 1, sizeof( buff ), file );
-      jsonParse( &jsn, buff,  sz );
+      jsonParse( &keep, buff,  sz );
     } while( sz >= sizeof( buff ) );
 
     fclose( file );
+    return( jsnDone( &keep ) );
   }
 
   return( jsnSave );
 }
 
 
+/*
+ *
+ */
+ANSIC int jsonParseStr( KeeperRec * jsn, const char * str  )
+{ return( jsonParse( jsn, str, strlen( str )));
+}
 
+ANSIC size_t jsonDigest( char    *ptr, size_t size
+                       , size_t nmemb, void *userdata )
+{ size *= nmemb;
+
+  jsonParse( (KeeperRec*)userdata, ptr, size );
+  return( size );
+}
 
 
 

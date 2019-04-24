@@ -27,16 +27,38 @@
 
 #include "keepconf.h"
 
-static int counter= 0;
+struct Aemet
+{ Aemet()
+  { data="hola123";
+    metadata="que124";
+   }
 
-//KEEPXML( counter );  // This does the job ( xml version )
-KEEPJSN( counter );  // This does the job ( json version )
+  const char * data;
+  const char * metadata;
+};
+
+KEEP_LOADER( Aemet )
+{ KEEPITEM( data      );
+  KEEPITEM( metadata  );
+};
+
+void buildObject( Aemet & hld )
+{ fprintf( stderr, "Data %s Meta %s\n", hld.data, hld.metadata );
+}
+
+
+Aemet * tested; 
+
+// KEEPJSN( tested );  // This does the job ( json version )
+
+
+//KEEPXML( tested );  // This does the job ( xml version )
+
 
 int main( int argc, char ** argv )
-{ printf( "%s has been executed %d times"
-        , *argv, counter );
+{ int counter;
 
-  counter++;         // Increase executions
+  LOADJSN( tested );
 
   return( counter );
 }
