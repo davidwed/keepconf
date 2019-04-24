@@ -30,16 +30,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//#include "expat.h"
+#include "expat.h"
 #include <typeinfo>
 
 #include "keepconf.h"
 
-extern "C" char *   itoa(       int value, char * str, int base );
+//extern "C" char *   itoa(       int value, char * str, int base );
 extern "C" char * ulltoa(unsigned long long val,char *buf, int radix);
 extern "C" char *   gcvt(   double number, int ndigit, char * buf);
-extern "C" char *   ltoa(      long value, char * buff, int radix );
+//extern "C" char *   ltoa(      long value, char * buff, int radix );
 extern "C" char *  lltoa( long long value, char * buff, int radix );
+
+char *itoa( int n, char * buf, int base )
+{ 
+  
+  sprintf(buf, "%ld", n);
+  return   buf;
+}
+
+char *ltoa( int n, char * buf, int base )
+{ 
+  
+  sprintf(buf, "%lu", n);
+  return   buf;
+}
 
 
 /* =====================================================[ JACS 2012-06-08 ]== *\
@@ -115,28 +129,16 @@ ANSIC const char * pushElement( ObjConfRec & cnf
   ObjLevelRec * code= cnf.info-1;   // Current loader
   ObjLevelRec * args= cnf.info;     // Current data holder
 
-//  printf( "push %10s %10s %10s\n", name, type, value );
+  //printf( "push %10s %10s %10s\n", name, type, value );
 
   if ( name )                       // Enter object or stamp value
-  { char * obj= strchr( name, '@' );
-
-    if ( obj )                      // Extract ttype info
-    { if ( *name == '@' )           // Tell repear last ( from an array )
-      { type= "class";
-        name= args->names;
-      }
-      else
-      { *obj++= 0;
-        args->objs= stringById( obj );
-    } }
+  { if ( *value )
+    { args->objs= stringById( value );
+    }
     else
-    { if ( *value )
-      { args->objs= stringById( value );
-      }
-      else
-      { args->objs= NULL;
-        type= "class";
-    } }
+    { args->objs= NULL;
+      type= "class";
+    }
 
     args->names= stringById( name );
 
@@ -146,21 +148,15 @@ ANSIC const char * pushElement( ObjConfRec & cnf
     }
 
     if ( !strcmp( type, "class" ))
-    { switch( phase )     // Is an array ??
-      { case           0: args->index++;      break;
-        case INTEGER_NAM: args->index= phase; break;
-        default         : args->index= 0;     break;
-      }
-
-
+    { args->index= phase; 
       if ( args > cnf.levels )
       { code->loader( cnf, code->holder );
       }
 
    //   printf( ">>>: %2d: %s >>> %d    [ %10s-%10s ]\n"
      //       , args - cnf.levels
-       //     , phase == INTEGER_NAM ? "STALE" : "     "
-         //   , phase == INTEGER_NAM ? 0       : args->index
+       //     , phase == INTEGER_NAN ? "STALE" : "     "
+         //   , phase == INTEGER_NAN ? 0       : args->index
            // , args->names, args->objs );
 
       cnf.info++;   // a more level
@@ -171,14 +167,14 @@ ANSIC const char * pushElement( ObjConfRec & cnf
     }
 
     args->index= phase;
-    code->loader( cnf, code->holder );
+    if ( code->loader ) code->loader( cnf, code->holder ); 
 
 
-    args->objs=   NULL;  // Mark arguments as invalid
+    args->objs=   NULL;    // Mark arguments as invalid
     args->names=  NULL;
     args->loader= NULL;
     args->holder= NULL;
-  }               // Leave object
+  }                        // Leave object
   else
   { cnf.info--;
     cnf.value= NULL;
@@ -187,12 +183,7 @@ ANSIC const char * pushElement( ObjConfRec & cnf
     { code->loader( cnf, code->holder );
     }
 
-//    code->objs  = NULL;  // NO Mark arguments as invalid
-//    code->names = NULL;  // JSON needs this
-//    code->loader= NULL;
-//    code->holder= NULL;
-
-    return( args->names );    // Name of the object needed
+    return( cnf.info->names );    // Name of the object needed
   }
 
   return( NULL );

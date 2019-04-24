@@ -35,7 +35,7 @@ static int   counter= 0;
 const char * message= "hello";
 unsigned char   flag= 123;
 
-// KEEPXMLLIST( correse )  // Uncomment that comment in next an for xml version
+// KEEPXMLLIST( correse )  // Comment out that and comment in next lilne an for xml version
 
 KEEPJSNLIST( correse )
 { KEEPGLOB( counter );

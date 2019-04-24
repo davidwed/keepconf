@@ -106,14 +106,14 @@ void * structById( const void * data
  */
   while( ptr->next )
   { ptr= ptr->next;
-    if ( !memcmp( ptr+1, data, sz )) /* Is suitable, but can vary in size */
-    { return( ptr+1 );               /* Found, return data                */
+    if ( !memcmp( ptr+1, data, sz ))              /* Is suitable, but can vary in size */
+    { return( ptr+1 );                            /* Found, return data                */
   } }
 
   ptr->next= calloc( type, 1 ); ptr= ptr->next;   /* ask for a new value */
 
   memcpy( ptr+1, data, sz );
-  return( ptr+1 );               /* Found, return data                */
+  return( ptr+1 );                                /* Found, return data                */
 }
 
 /* Very handy for const string comparations.
@@ -125,4 +125,15 @@ const char * stringById( const char * str )
         : NULL );                             /* Make void strings equal */
 }
 
+
+int strcasecmp(const char *s1, const char *s2)
+{ const unsigned char * us1 = (const unsigned char *)s1,
+                      * us2 = (const unsigned char *)s2;
+
+  while ( tolower(*us1) == tolower(*us2++) )
+    if (*us1++ == '\0')
+      return (0);
+
+  return (tolower(*us1) - tolower(*--us2));
+}
 

@@ -17,20 +17,6 @@
 					<Add option="-g" />
 				</Compiler>
 			</Target>
-			<Target title="libxmlconf">
-				<Option output="$(TARGET_COMPILER_DIR)/lib/xmlconf" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="" />
-				<Option object_output="obj/Debug/" />
-				<Option type="2" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-g" />
-				</Compiler>
-				<ExtraCommands>
-					<Add after="cp $(PROJECT_DIR)..\xmlconf.h $(TARGET_COMPILER_DIR)include\altomaltes" />
-					<Mode after="always" />
-				</ExtraCommands>
-			</Target>
 			<Target title="userflex">
 				<Option output="../userflex" prefix_auto="1" extension_auto="1" />
 				<Option working_dir=".." />
@@ -63,7 +49,7 @@
 			</Target>
 			<Target title="01-counter">
 				<Option output="counter" prefix_auto="1" extension_auto="1" />
-				<Option working_dir=".." />
+				<Option working_dir="K:/" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -75,7 +61,7 @@
 			</Target>
 			<Target title="02-bunch">
 				<Option output="bunch" prefix_auto="1" extension_auto="1" />
-				<Option working_dir=".." />
+				<Option working_dir="K:/" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -87,7 +73,7 @@
 			</Target>
 			<Target title="03-object">
 				<Option output="object" prefix_auto="1" extension_auto="1" />
-				<Option working_dir=".." />
+				<Option working_dir="K:/" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -111,7 +97,7 @@
 			</Target>
 			<Target title="05-list">
 				<Option output="list" prefix_auto="1" extension_auto="1" />
-				<Option working_dir=".." />
+				<Option working_dir="K:/" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -123,7 +109,7 @@
 			</Target>
 			<Target title="06-polymorphic">
 				<Option output="polymorphic" prefix_auto="1" extension_auto="1" />
-				<Option working_dir=".." />
+				<Option working_dir="K:/" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -132,6 +118,33 @@
 					<Add option="-O0" />
 					<Add directory="L:/altomaltes/xmlconf/" />
 				</Compiler>
+			</Target>
+			<Target title="07-array">
+				<Option output="bunch" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="K:/" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-O0" />
+					<Add directory="L:/altomaltes/xmlconf/" />
+				</Compiler>
+			</Target>
+			<Target title="libkeepconf">
+				<Option output="$(TARGET_COMPILER_DIR)/lib/keepconf" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="" />
+				<Option object_output="obj/Debug/" />
+				<Option type="2" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<ExtraCommands>
+					<Add before="$(CMD_CP)  $(PROJECT_DIR)..$(SEP)keepconf.h $(TARGET_COMPILER_DIR)include" />
+					<Add before="$(CMD_CP)  $(PROJECT_DIR)..$(SEP)parse.h $(TARGET_COMPILER_DIR)include" />
+					<Mode after="always" />
+				</ExtraCommands>
 			</Target>
 		</Build>
 		<Compiler>
@@ -157,7 +170,10 @@
 		<Unit filename="../06-polymorphic.cc">
 			<Option target="06-polymorphic" />
 		</Unit>
-		<Unit filename="../article.doc" />
+		<Unit filename="../07-array.cc">
+			<Option target="07-array" />
+		</Unit>
+		<Unit filename="../articulo.rtf" />
 		<Unit filename="../intern.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -167,17 +183,19 @@
 		<Unit filename="../keepconf.cc" />
 		<Unit filename="../keepconf.h">
 			<Option target="builtin" />
-			<Option target="libxmlconf" />
+			<Option target="libkeepconf" />
 			<Option target="userflex" />
 			<Option target="llist" />
 			<Option target="virtual" />
+			<Option target="07-array" />
 		</Unit>
 		<Unit filename="../parse.h">
 			<Option target="builtin" />
-			<Option target="libxmlconf" />
+			<Option target="libkeepconf" />
 			<Option target="userflex" />
 			<Option target="llist" />
 			<Option target="virtual" />
+			<Option target="07-array" />
 		</Unit>
 		<Unit filename="../xml.c">
 			<Option compilerVar="CC" />

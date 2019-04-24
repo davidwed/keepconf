@@ -28,6 +28,7 @@
 #ifndef KEEPCONF_H_INCLUDED
 #define KEEPCONF_H_INCLUDED
 
+#include <alloca.h>
 #include "parse.h"
 
 #ifdef __cplusplus // Allow mix witth c code
@@ -35,7 +36,7 @@
 #include <typeinfo>
 #include <string.h>
 
-#define INTEGER_NAM (int)0x80000000
+#define INTEGER_NAN (int)0x80000000
 #define RADIX 10
 
 #define OBJECT_SAVE  0x1
@@ -164,6 +165,9 @@ struct ObjConfRec;
 
 typedef const void * (*KeepLoader)( ObjConfRec &, void * );
 
+const void * dummyLoader( ObjConfRec &, void * );
+
+
 
 /*  Registering object types
  */
@@ -253,14 +257,10 @@ template <class T> Registrar< T > * findClassByName( const char * name )
 /*  The struct starts here
  */
 
-struct ObjConfRec
-{ int code;
-  const char  * value;
 
-  ObjLevelRec   levels[ 256 ];
-  ObjLevelRec * info;
 
-  template < class T > friend ITEM_DONE loadObject( ObjConfRec & cnf, T & t )
+
+  template <typename T>  ITEM_DONE loadObject( struct ObjConfRec & cnf, T & t )
   { void load( ObjConfRec &, T & obj );
 
     if ( cnf.code == OBJECT_LOAD )
@@ -277,8 +277,14 @@ struct ObjConfRec
     return( ITEM_LOADED );              // Load or save
   }
 
-  ObjectKeeper parserStub;    // Writer
-  KeeperRec    xmlData;       // Writer
+struct ObjConfRec
+{ int code;
+  const char  * value;
+
+  ObjLevelRec   levels[ 256 ];
+  ObjLevelRec * info;
+  ObjectKeeper  parserStub;    // Writer
+  KeeperRec     xmlData;       // Writer
 
   ObjConfRec( )
   { value= NULL;
@@ -296,19 +302,34 @@ struct ObjConfRec
 
   const char * leave( int idx );
 
-  template <class T> ITEM_DONE save( T & t, const char * key, const char * id )
-  { void const * load( ObjConfRec &, T & );
+  template <class T, int els> ITEM_DONE save( T (& t)[els], const char * key, const char * id ) // ene 2019
+  { void load( ObjConfRec &, T & );
 
-    enter( id, key, NULL, INTEGER_NAM );
+    int idx= 0; while( idx < els )
+    { enter( id, key, NULL, idx ? idx : -els );
+      load( *this, t[ idx ] );
+      idx++;
+      leave( idx < els ? idx : 0  );
+    }    
+   
+    return( ITEM_VOID ); 
+  }
+
+  template <class T> ITEM_DONE save( T & t, const char * key, const char * id )
+  { void load( ObjConfRec &, T & );
+
+    enter( id, key, NULL, INTEGER_NAN );
     if ( &t )               // Test for void object
     { load( *this, t );
     }
-    leave( INTEGER_NAM );
+    leave( INTEGER_NAN );
     return( ITEM_VOID );
   }
 
-  template <class T
-           ,class O> ITEM_DONE save( T * & t, const char * key, O & streamer )
+/*
+ */
+  template < class T
+           , class O > ITEM_DONE save( T * & t, const char * key, O & streamer )
   { struct HolderRec
     { HolderRec      * next;
 
@@ -343,7 +364,6 @@ struct ObjConfRec
     while( list )
     { enter( list->type, key, NULL, loop ); //??
       list->fact->loader( *this, list->item );
-
       leave( list->next ? loop : 0 );
 
       if ( loop < 0 )
@@ -355,6 +375,10 @@ struct ObjConfRec
     return( ITEM_WRITTEN );
   }
 
+  template <class T> KeepLoader loadObjectCast(  )
+  { return( reinterpret_cast< KeepLoader >( loadObject<T> ));
+  } 
+
   template <class T> ITEM_DONE load( T *& t, const char * key, const char * id )
   { if ( strcmp( info->names, key ))
     { return( ITEM_NAMES );
@@ -365,7 +389,31 @@ struct ObjConfRec
     }
 
     info->holder= t;
-    info->loader= reinterpret_cast< KeepLoader >( loadObject<T> );
+    info->loader= loadObjectCast<T>();
+
+    return( ITEM_VOID );
+  }
+
+  template <class T, int els>ITEM_DONE load( T (& t)[els], const char * key, const char * id ) // ene 2019
+  { if ( strcmp( info->names, key ))
+    { return( ITEM_NAMES );
+    }
+
+    int idx= info->index >= els ? 0 : info->index; // Array size overloaded
+
+    if ( idx == INTEGER_NAN )                      // Array size unknown, start of object
+    { idx= 0;
+    }
+
+    if ( idx < 0 )
+    { fprintf( stderr, "Index of %d (%d) for %s %s\n"
+             , info->index, els
+             , key, id ); 
+      info->holder= t + idx;
+    }
+    
+    info->holder= t + idx;
+    info->loader= loadObjectCast<T>();
 
     return( ITEM_VOID );
   }
@@ -376,7 +424,7 @@ struct ObjConfRec
     }
 
     info->holder= &t;
-    info->loader= reinterpret_cast< KeepLoader >( loadObject<T> );
+    info->loader= loadObjectCast<T>();
 
     return( ITEM_VOID );
   }
@@ -458,7 +506,7 @@ struct ObjConfRec
 
         t= new T( si );                    // Must create on load
         info->holder= t;                   // Tell engine also
-        info->loader= reinterpret_cast< KeepLoader >( loadObject<T> );
+        info->loader= loadObjectCast<T>();
       return( ITEM_LOADED );
     }
     return( ITEM_VOID );
@@ -467,10 +515,18 @@ struct ObjConfRec
 /* For arrays
  */
 
-  template <class T> ITEM_DONE launch( T * t, const char * key, int els )
+//  template <class T> ITEM_DONE launch( T * t, const char * key, int els )
+//  { switch( code )
+//    { case OBJECT_SAVE: return( save( t, key, els ));  //  SAVE version
+//      case OBJECT_LOAD: return( load( t, key, els ));  //  LOAD version
+//    }
+//    return( ITEM_VOID );
+//  }
+
+  template <class T, int els> ITEM_DONE launch( T (&t)[els], const char * key )
   { switch( code )
-    { case OBJECT_SAVE: return( save( t, key, els ));  //  SAVE version
-      case OBJECT_LOAD: return( load( t, key, els ));  //  LOAD version
+    { case OBJECT_SAVE: return( save( t, key,key ));  //  SAVE version
+      case OBJECT_LOAD: return( load( t, key,key ));  //  LOAD version
     }
     return( ITEM_VOID );
   }
@@ -526,7 +582,10 @@ struct ObjConfRec
         { return( ITEM_KEYS );
         }
 
-        if ( info->index < els )        // Sanity check
+        if ( info->index == INTEGER_NAN )  // one time dump
+        { //strcpy( itm, value );
+        }
+        else if ( info->index < els )      // Sanity check
         { fromString( itm[ info->index ], value );
         }
 
@@ -545,7 +604,7 @@ struct ObjConfRec
     { case OBJECT_SAVE:
       { char buff[ 64 ];
         asString( buff, t ) ;
-        enter( id, key, buff, INTEGER_NAM );       // LOAD version
+        enter( id, key, buff, INTEGER_NAN );       // LOAD version
       }
       return( ITEM_WRITTEN );
 
@@ -576,37 +635,8 @@ struct ObjConfRec
   ITEM_DONE launch(         double (&t), const char * id ) { return( launchStd( t, id )); }
   ITEM_DONE launch(          float (&t), const char * id ) { return( launchStd( t, id )); }
 
-/*  ITEM_DONE launch(          qlong * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  ITEM_DONE launch( unsigned qlong * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  ITEM_DONE launch(            int * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  ITEM_DONE launch( unsigned   int * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  ITEM_DONE launch(           long * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  ITEM_DONE launch( unsigned  long * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  ITEM_DONE launch(          short * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  ITEM_DONE launch( unsigned short * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  ITEM_DONE launch(           char * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  ITEM_DONE launch( unsigned  char * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  ITEM_DONE launch(           bool * t, const char * id, int sz ) {return( launch Std( t, id, sz )); }
-  */
-/* For sized arrays
- */
-
-//  template < int x > ITEM_DONE launch( unsigned qlong(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch(          qlong(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch( unsigned   int(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch(            int(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch( unsigned  long(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch(           long(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch( unsigned short(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch(          short(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch( unsigned  char(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch(           char(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch(   const char *(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
-//  template < int x > ITEM_DONE launch(         char *(&w)[ x ], const char * id ) { return( launchStd( w, id, x )); }
- // template < int sz > ITEM_DONE launch( unsigned qlong(&w)[ sz ], const char * id ) { return( launchStd( w, id, sz )); }
-
-  template < class T, int x >
-    ITEM_DONE launch( T (&w)[ x ]         , const char * id ) { return( launchStd( (T*)w, id, x )); }
+ // template < class T, int x >
+   // ITEM_DONE launch( T (&w)[ x ]         , const char * id ) { return( launchStd( (T*)w, id, x )); }
 
 
   template < class T, int y, int x >
@@ -636,7 +666,6 @@ struct ObjConfRec
 
 
 
-
 /** ================================================= [ JACS, 10/01/2006 ] == *\
  *                                                                            *
  *   JASC 2006                                                                *
@@ -650,17 +679,6 @@ struct ObjConfRec
  *    Templates from user types are instantiated "on the fly". There is an    *
  *  instantiation for data and another for arrays of data, since their xml    *
  *  representation differs.                                                   *
-\* ========================================================================= **/
-
-/** ====================================================[ JACS 2012-06-08 ]== *\
- *                                                                            *
- *   altomaltes@yahoo.es                                                      *
- *                                                                            *
- *  TEMPLATE load                                                             *
- *                                                                            *
- *  @brief base values have particularized tretement.                         *
- *         Unafortunately, C++ manages it diferently                          *
- *                                                                            *
 \* ========================================================================= **/
 
 
@@ -785,17 +803,17 @@ template < typename T > int copy( T & toLoad,  const char * varName
 #define LOADJSN( var, ... ) copy(  var, #var, jsnLoad, ##__VA_ARGS__ )
 #define SAVEJSN( var, ... ) copy( #var,  var, jsnSave, ##__VA_ARGS__ )
 
+
+#define KEEPXML( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, xmlLoad )
+#define KEEPJSN( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, jsnLoad )
+#define CAP_TYPEOF 1
+
 #if __cplusplus < 201103L
-  #ifdef __GNUG__
-    #define KEEPXML( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, xmlLoad )
-    #define KEEPJSN( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, jsnLoad )
-  #else
-    #define KEEPXML( type, var ) ObjKeeper<type>XMLKEEP##var( var, #var, xmlLoad )
-    #define KEEPJSN( type, var ) ObjKeeper<type>XMLKEEP##var( var, #var, jsnLoad )
+  #ifndef __GNUG__
+    #define KEEPXML( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, xmlLoad )
+    #define KEEPJSN( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, jsnLoad )
+    #undef CAP_TYPEOF 
   #endif
-#else
-  #define KEEPXML( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, xmlLoad )
-  #define KEEPJSN( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, jsnLoad )
 #endif
 
 
@@ -811,7 +829,7 @@ void load( ObjConfRec & cnf, TYPE##name &  )
 #define KEEPJSNLIST( name ) KEEPBUNCH( name, jsnLoad )
 
 #define KEEP_LOADER( T ) void load( ObjConfRec & cnf, T & hld )
-
+#define KEEP_STORED( obj ) ObjStorer< typeof( obj )  > storerOf##obj( obj, #obj )
 
 
 /*    Hide implementation detais to user. Not very purist, but c++ does not
