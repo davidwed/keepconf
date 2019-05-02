@@ -18,14 +18,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- *     FILE: 01-integer.cc
+ *     FILE: 01-object.cc
  *     DATE: jun 2017
  *
  *  DESCRIPCION: Adds persiting capabilities to an object
  *
  */
 
-#include "keepconf.h"
+#include "keepconf.h" 
 
 class PersintentExample
 { public:

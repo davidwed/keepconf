@@ -81,7 +81,7 @@ static int xmlParse( KeeperRec * xml, const char * dat, int sz  )
 
     if ( xml->phase & EXPECT_QUOTE )  /* Waiting for first quote */
     { if ( itm == '"' )
-     { BITRESET( xml->phase, EXPECT_QUOTE | STRIP_BLANKS );
+      { BITRESET( xml->phase, EXPECT_QUOTE | STRIP_BLANKS );
       }
       continue;
     }
@@ -103,9 +103,6 @@ static int xmlParse( KeeperRec * xml, const char * dat, int sz  )
         { return( -1 );
         }
 
-   //     printf("got %2d %7d VALUE %s %s %s\n"
-     //         , xml->level, xml->items == INTEGER_NAM ? 0 : xml->items
-       //       , xml->buffItm, xml->buffNme, xml->buffVal );
         pushElement( xml->data, xml->idx        /* convey the pair (OBJECT) */
                    , xml->buffItm
                    , xml->buffNme
@@ -178,12 +175,7 @@ static int xmlParse( KeeperRec * xml, const char * dat, int sz  )
         switch( itm )
         { case '>':
             xml->level++;
-     //       printf("got %2d %3d.%3d OBJCT %s %s %s\n"
-       //           , xml->level
-         //         , xml->items == INTEGER_NAM ? 0 : xml->items
-           //       , xml->idx   == INTEGER_NAM ? 0 : xml->idx
-             //     , xml->buffItm, xml->buffNme, xml->buffVal );
-
+   
             pushElement( xml->data
                        , xml->idx ? xml->idx : xml->items         /* convey the pair (OBJECT) */
                        , xml->buffItm
@@ -267,10 +259,6 @@ static int xmlParse( KeeperRec * xml, const char * dat, int sz  )
 static char * escapeString( KeeperRec  * xml )
 { char * src;
   char * dst;
-
-//  if ( *xml->ptr=='<' )
-//  { puts("hola");
-//  }
 
   for(  src= xml->ptr, dst= xml->buffVal
      ; *src
