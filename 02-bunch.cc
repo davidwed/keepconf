@@ -18,15 +18,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- *     FILE: 01-integer.cc
+ *     FILE: 02-bunch.cc
  *     DATE: jun 2017
  *
- *  DESCRIPCION: keeps stored an bunch of values among runs
+ *  DESCRIPCION: keeps stored an bunch of global values among runs
  *
  */
 
 
-#include "keepconf.h"
+#include "keepconf.h"  /// 1º) Include the required templates
 
 
 /* Initialized values, may be seen as "default values", on config file lack
@@ -47,9 +47,10 @@ KEEPJSNLIST( correse )
 int main( int argc, char ** argv )
 { printf( "%s has been executed %d times\n"
           "the message is %s\n"
-        , *argv, counter, message );
+        , *argv, counter
+        , message );
 
-  counter++;         // Increase executions
+  counter++;         // Increase execution counter
 
   return( counter );
 }
