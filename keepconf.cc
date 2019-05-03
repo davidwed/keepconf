@@ -29,8 +29,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#include "expat.h"
 #include <typeinfo>
 
 #include "keepconf.h"
@@ -42,16 +40,12 @@ extern "C" char *   gcvt(   double number, int ndigit, char * buf);
 extern "C" char *  lltoa( long long value, char * buff, int radix );
 
 char *itoa( int n, char * buf, int base )
-{ 
-  
-  sprintf(buf, "%ld", n);
+{ sprintf(buf, "%ld", n);
   return   buf;
 }
 
 char *ltoa( int n, char * buf, int base )
-{ 
-  
-  sprintf(buf, "%lu", n);
+{ sprintf(buf, "%lu", n);
   return   buf;
 }
 

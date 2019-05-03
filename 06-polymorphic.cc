@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- *     FILE: 01-integer.cc
+ *     FILE: 01-polymorphic.cc
  *     DATE: jun 2017
  *
  *  DESCRIPCION: Holds a list of arbitrary type objects

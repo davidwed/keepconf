@@ -28,7 +28,6 @@
 #ifndef KEEPCONF_H_INCLUDED
 #define KEEPCONF_H_INCLUDED
 
-#include <alloca.h>
 #include "parse.h"
 
 #ifdef __cplusplus // Allow mix witth c code
@@ -86,7 +85,7 @@ enum  ITEM_DONE
 
 
   extern "C" int strcasecmp( const char *s1, const char *s2);
-  extern "C" char   *strdup( const char *s );
+//  extern "C" char   *strdup( const char *s );
 
 /* Try to standarize this key macro. Same objects must generate same object names.
  */
@@ -257,10 +256,7 @@ template <class T> Registrar< T > * findClassByName( const char * name )
 /*  The struct starts here
  */
 
-
-
-
-  template <typename T>  ITEM_DONE loadObject( struct ObjConfRec & cnf, T & t )
+  template <typename T>  ITEM_DONE loadObject( /*struct*/ ObjConfRec & cnf, T & t )
   { void load( ObjConfRec &, T & obj );
 
     if ( cnf.code == OBJECT_LOAD )
@@ -804,16 +800,19 @@ template < typename T > int copy( T & toLoad,  const char * varName
 #define SAVEJSN( var, ... ) copy( #var,  var, jsnSave, ##__VA_ARGS__ )
 
 
-#define KEEPXML( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, xmlLoad )
-#define KEEPJSN( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, jsnLoad )
-#define CAP_TYPEOF 1
 
 #if __cplusplus < 201103L
   #ifndef __GNUG__
-    #define KEEPXML( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, xmlLoad )
-    #define KEEPJSN( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, jsnLoad )
-    #undef CAP_TYPEOF 
+  //  #define KEEPXML( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, xmlLoad )
+  //  #define KEEPJSN( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, jsnLoad )
+  //  #undef CAP_TYPEOF 
+    #define KEEPXML( var ) ObjKeeper<decltype(var)>XMLKEEP##var( var, #var, xmlLoad )
+    #define KEEPJSN( var ) ObjKeeper<decltype(var)>XMLKEEP##var( var, #var, jsnLoad )
   #endif
+#else
+  #define KEEPXML( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, xmlLoad )
+  #define KEEPJSN( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, jsnLoad )
+  #define CAP_TYPEOF 1
 #endif
 
 

@@ -28,6 +28,21 @@
 #include <stdio.h>
 #include <malloc.h>
 
+#ifdef _MSC_VER
+   // #define alloca _malloca
+  #define qlong __int64
+  #define qword __uint64
+  #define ulltoa _ui64toa
+  #define ltoa   _ltoa
+  #define itoa   _itoa
+  #define gcvt   _gcvt
+  #define strdup _strdup
+#else
+  #include <alloca.h>
+  #define qlong long long
+  #define qword unsigned long long
+#endif
+
 
 
 #ifdef __cplusplus // Allow mix witth c code

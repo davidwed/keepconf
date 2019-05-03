@@ -29,7 +29,7 @@
 
 static int counter= 0;
 
-KEEPJSN( counter );        /// 2º) This does the job ( xml version )
+KEEPXML( counter );         /// 2º) This does the job ( xml version )
 
 int main( int argc, char ** argv )
 { printf( "%s has been executed %d times"

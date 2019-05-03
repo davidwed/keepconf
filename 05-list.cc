@@ -56,11 +56,11 @@ Aemet * tested;
 
 
 int main( int argc, char ** argv )
-{ int counter;
+{ 
 
   LOADJSN( tested );
 
-  return( counter );
+  return( 0 );
 }
 
 

@@ -81,7 +81,7 @@ int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
       case PHASE_STRING:
         if ( itm == '"' )
         { if ( jsn->ptr == jsn->buffVal )
-          { *jsn->ptr++= " ";             
+          { *jsn->ptr++= ' ';             
           }
           *jsn->ptr= 0;
           jsn->phase= PHASE_ENDVALUE;
@@ -185,8 +185,9 @@ int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
           jsn->phase= PHASE_STRING;
         break;
 
-        case '.': case '-' :
-        case '0' ... '9':
+        case '.': case '-':
+        case '0': case '1': case '2': case '3': case '4':   
+  	    case '5': case '6': case '7': case '8': case '9':
           jsn->ptr= jsn->buffVal; *jsn->ptr++= itm;
           jsn->phase= PHASE_NUMBER;
         continue;
@@ -270,7 +271,7 @@ int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
 /*
  */
 static void jsnEnter( KeeperRec * jsn )
-{ int loop; int brck= ' ';
+{ int loop; int brck= ' '; int bunch;
 
   if ( jsn->level < 0 )
   { if ( jsn->file )
@@ -286,9 +287,9 @@ static void jsnEnter( KeeperRec * jsn )
     { fputs( "  ", jsn->file );
   } }
 
-  int bunch= jsn->level ? ( jsn->level - jsn->token ) ?  '{'
-                                                      : ','
-                        : ' ';    // JASON has not global set
+  bunch= jsn->level ? ( jsn->level - jsn->token ) ?  '{'
+                                                  : ','
+                    : ' ';    // JASON has not global set
 
   jsn->token= jsn->level;
 
