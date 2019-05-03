@@ -140,7 +140,7 @@ static int xmlParse( KeeperRec * xml, const char * dat, int sz  )
         *xml->ptr= 0;
 
         if ( itm == '>' )                         /* Premature ending, it's a non argument token*/
-        { pushElement( xml->data, INTEGER_NAM     /* Exit level */
+        { pushElement( xml->data, INTEGER_NAN     /* Exit level */
                      , xml->buffItm
                      , xml->buffNme               /* 0 */
                      , xml->buffVal );            /* 0 */
@@ -154,7 +154,7 @@ static int xmlParse( KeeperRec * xml, const char * dat, int sz  )
 
         xml->ptr= xml->buffNme;
         xml->phase= PHASE_NAME | STRIP_BLANKS;
-        xml->items= xml->idx= INTEGER_NAM;
+        xml->items= xml->idx= INTEGER_NAN;
       break;
 
       case PHASE_TOKEN_LEAVE:
@@ -299,7 +299,7 @@ static void parserStub( KeeperRec  * xml )
       return;
     }
 
-    if ( xml->idx == INTEGER_NAM )
+    if ( xml->idx == INTEGER_NAN )
     { escapeString( xml );
 
       fprintf( xml->file
@@ -319,7 +319,7 @@ static void parserStub( KeeperRec  * xml )
              , xml->buffVal );
   } }
   else                               /* Is a branch, so level involved */
-  { if ( xml->idx == INTEGER_NAM )
+  { if ( xml->idx == INTEGER_NAN )
     { fprintf( xml->file             /* Single value */
              , *xml->buffItm ? "<%s class=\"%s\">\n"
                              :  "<%s>\n"
@@ -348,7 +348,7 @@ ANSIC ObjectKeeper xmlSave( KeeperRec    * xml
 
   xml->data= data;
   xml->phase= PHASE_IDLE;
-  xml->idx= INTEGER_NAM;
+  xml->idx= INTEGER_NAN;
   xml->items=
   xml->level= 0;
   xml->ptr= NULL;
@@ -388,7 +388,7 @@ ANSIC KeepSvr xmlLoad( const char * name
     xml.ptr  = NULL;
     xml.items= 0;
     xml.level= 0;
-    xml.idx  = INTEGER_NAM;
+    xml.idx  = INTEGER_NAN;
 
     do
     { sz= fread( buff, 1, sizeof( buff ), file );
