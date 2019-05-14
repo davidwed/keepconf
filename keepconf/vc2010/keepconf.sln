@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C++ Express 2010
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01-counter", "keepconf.vcxproj", "{2DC9C085-858F-44BA-9860-1DDA3CF29AAE}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02-bunch", "02-bunch\02-bunch.vcxproj", "{90DDA855-A133-493C-B4A6-6F2E66237CD6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03-object", "03-object\03-object.vcxproj", "{3A6506BA-C0F8-446B-8C7E-5EF07C02EB04}"
@@ -15,16 +13,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "06-polymorphic", "06-polymo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "05-list", "05-list\05-list.vcxproj", "{C9E22BE8-6E23-4352-A1B1-7B5FF787C02F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01-counter", "01-counter\01-counter.vcxproj", "{C8AFF8ED-4921-44AB-BFE7-4ECEF4CBE8DB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2DC9C085-858F-44BA-9860-1DDA3CF29AAE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{2DC9C085-858F-44BA-9860-1DDA3CF29AAE}.Debug|Win32.Build.0 = Debug|Win32
-		{2DC9C085-858F-44BA-9860-1DDA3CF29AAE}.Release|Win32.ActiveCfg = Release|Win32
-		{2DC9C085-858F-44BA-9860-1DDA3CF29AAE}.Release|Win32.Build.0 = Release|Win32
 		{90DDA855-A133-493C-B4A6-6F2E66237CD6}.Debug|Win32.ActiveCfg = Debug|Win32
 		{90DDA855-A133-493C-B4A6-6F2E66237CD6}.Debug|Win32.Build.0 = Debug|Win32
 		{90DDA855-A133-493C-B4A6-6F2E66237CD6}.Release|Win32.ActiveCfg = Release|Win32
@@ -49,6 +45,10 @@ Global
 		{C9E22BE8-6E23-4352-A1B1-7B5FF787C02F}.Debug|Win32.Build.0 = Debug|Win32
 		{C9E22BE8-6E23-4352-A1B1-7B5FF787C02F}.Release|Win32.ActiveCfg = Release|Win32
 		{C9E22BE8-6E23-4352-A1B1-7B5FF787C02F}.Release|Win32.Build.0 = Release|Win32
+		{C8AFF8ED-4921-44AB-BFE7-4ECEF4CBE8DB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8AFF8ED-4921-44AB-BFE7-4ECEF4CBE8DB}.Debug|Win32.Build.0 = Debug|Win32
+		{C8AFF8ED-4921-44AB-BFE7-4ECEF4CBE8DB}.Release|Win32.ActiveCfg = Release|Win32
+		{C8AFF8ED-4921-44AB-BFE7-4ECEF4CBE8DB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

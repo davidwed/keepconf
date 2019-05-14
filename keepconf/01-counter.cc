@@ -27,17 +27,17 @@
 
 #include "keepconf.h"      /// 1º) Include the required templates
 
-static int counter= 0;
+static int counter[20];
 
-KEEPXML( counter );         /// 2º) This does the job ( xml version )
+KEEPJSN( counter );         /// 2º) This does the job ( xml version )
 
 int main( int argc, char ** argv )
-{ printf( "%s has been executed %d times"
-        , *argv, counter );
+{// printf( "%s has been executed %d times"
+   //     , *argv, counter );
 
-  counter++;         // Increase executions
+  //counter++;         // Increase executions
 
-  return( counter );
+  //return( counter );
 }
 
 
