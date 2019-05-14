@@ -117,7 +117,7 @@ ANSIC ObjectKeeper jsnSave( KeeperRec *
 
 
 typedef KeepSvr (*KeepLdr )( const char * name
-                           , void * data  );
+                           , void       * data  );
 
 ANSIC KeepSvr xmlLoad( const char * name
                      , void * data  );

@@ -341,9 +341,9 @@ static void parserStub( KeeperRec  * xml )
 
 /** Returns the write driver, must be called on token serializing
  */
-ANSIC ObjectKeeper xmlSave( KeeperRec    * xml
-                       , const char * name
-                       , void       * data  )
+ANSIC ObjectKeeper xmlSave( KeeperRec  * xml
+                          , const char * name
+                          , void       * data  )
 { char * fname= alloca( strlen( name ) + 16 );
 
   xml->data= data;
@@ -400,6 +400,22 @@ ANSIC KeepSvr xmlLoad( const char * name
 
   return( xmlSave );
 }
+
+/*
+ *
+ */
+ANSIC int xmlParseStr( KeeperRec * jsn, const char * str  )
+{ return( xmlParse( jsn, str, strlen( str )));
+}
+
+ANSIC size_t xmlDigest( char    *ptr, size_t size
+                      , size_t nmemb, void *userdata )
+{ size *= nmemb;
+
+  xmlParse( (KeeperRec*)userdata, ptr, size );
+  return( size );
+}
+
 
 
 

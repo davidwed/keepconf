@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{90DDA855-A133-493C-B4A6-6F2E66237CD6}</ProjectGuid>
+    <ProjectGuid>{C8AFF8ED-4921-44AB-BFE7-4ECEF4CBE8DB}</ProjectGuid>
     <RootNamespace>My02bunch</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -62,7 +62,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\02-bunch.cc" />
+    <ClCompile Include="..\..\01-counter.cc" />
     <ClCompile Include="..\..\intern.c" />
     <ClCompile Include="..\..\json.c" />
     <ClCompile Include="..\..\keepconf.cc" />

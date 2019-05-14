@@ -28,6 +28,7 @@
 #ifndef KEEPCONF_H_INCLUDED
 #define KEEPCONF_H_INCLUDED
 
+#include <alloca.h>
 #include "parse.h"
 
 #ifdef __cplusplus // Allow mix witth c code
@@ -85,7 +86,7 @@ enum  ITEM_DONE
 
 
   extern "C" int strcasecmp( const char *s1, const char *s2);
-//  extern "C" char   *strdup( const char *s );
+  extern "C" char   *strdup( const char *s );
 
 /* Try to standarize this key macro. Same objects must generate same object names.
  */
@@ -256,7 +257,10 @@ template <class T> Registrar< T > * findClassByName( const char * name )
 /*  The struct starts here
  */
 
-  template <typename T>  ITEM_DONE loadObject( /*struct*/ ObjConfRec & cnf, T & t )
+
+
+
+  template <typename T>  ITEM_DONE loadObject( struct ObjConfRec & cnf, T & t )
   { void load( ObjConfRec &, T & obj );
 
     if ( cnf.code == OBJECT_LOAD )
@@ -643,19 +647,19 @@ struct ObjConfRec
 
 
 
-/* For sized vectors
+/* For 1D sized vectors
  */
 
-  template < int sz > ITEM_DONE launch(           qlong * &w, const char * id, const          qlong (&i)[sz], int & len ) { return( loadHeap( id, w, i, len, sz ));}
-  template < int sz > ITEM_DONE launch(  unsigned qlong * &w, const char * id, const unsigned qlong (&i)[sz], int & len ) { return( loadHeap( id, w, i, len, sz ));}
-  template < int sz > ITEM_DONE launch(             int * &w, const char * id, const            int (&i)[sz], int & len ) { return( loadHeap( id, w, i, len, sz ));}
-  template < int sz > ITEM_DONE launch(  unsigned   int * &w, const char * id, const unsigned   int (&i)[sz], int & len ) { return( loadHeap( id, w, i, len, sz ));}
-  template < int sz > ITEM_DONE launch(            long * &w, const char * id, const            int (&i)[sz], int & len ) { return( loadHeap( id, w, i, len, sz ));}
-  template < int sz > ITEM_DONE launch(  unsigned  long * &w, const char * id, const unsigned   int (&i)[sz], int & len ) { return( loadHeap( id, w, i, len, sz ));}
-  template < int sz > ITEM_DONE launch(           short * &w, const char * id, const          short (&i)[sz], int & len ) { return( loadHeap( id, w, i, len, sz ));}
-  template < int sz > ITEM_DONE launch(  unsigned short * &w, const char * id, const unsigned short (&i)[sz], int & len ) { return( loadHeap( id, w, i, len, sz ));}
-  template < int sz > ITEM_DONE launch(            char * &w, const char * id, const           char (&i)[sz], int & len ) { return( loadHeap( id, w, i, len, sz ));}
-  template < int sz > ITEM_DONE launch(  unsigned  char * &w, const char * id, const unsigned  char (&i)[sz], int & len ) { return( loadHeap( id, w, i, len, sz ));}
+  template < int x > ITEM_DONE launch(           qlong (&w)[ x ], const char * id ) { return( launchStd( w, id, x ));}
+  template < int x > ITEM_DONE launch(  unsigned qlong (&w)[ x ], const char * id ) { return( launchStd( w, id, x ));}
+  template < int x > ITEM_DONE launch(             int (&w)[ x ], const char * id ) { return( launchStd( w, id, x ));}
+  template < int x > ITEM_DONE launch(  unsigned   int (&w)[ x ], const char * id ) { return( launchStd( w, id, x ));}
+  template < int x > ITEM_DONE launch(            long (&w)[ x ], const char * id ) { return( launchStd( w, id, x ));}
+  template < int x > ITEM_DONE launch(  unsigned  long (&w)[ x ], const char * id ) { return( launchStd( w, id, x ));}
+  template < int x > ITEM_DONE launch(           short (&w)[ x ], const char * id ) { return( launchStd( w, id, x ));}
+  template < int x > ITEM_DONE launch(  unsigned short (&w)[ x ], const char * id ) { return( launchStd( w, id, x ));}
+  template < int x > ITEM_DONE launch(            char (&w)[ x ], const char * id ) { return( launchStd( w, id, x ));}
+  template < int x > ITEM_DONE launch(  unsigned  char (&w)[ x ], const char * id ) { return( launchStd( w, id, x ));}
 
 
 };
@@ -800,19 +804,16 @@ template < typename T > int copy( T & toLoad,  const char * varName
 #define SAVEJSN( var, ... ) copy( #var,  var, jsnSave, ##__VA_ARGS__ )
 
 
+#define KEEPXML( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, xmlLoad )
+#define KEEPJSN( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, jsnLoad )
+#define CAP_TYPEOF 1
 
 #if __cplusplus < 201103L
   #ifndef __GNUG__
-  //  #define KEEPXML( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, xmlLoad )
-  //  #define KEEPJSN( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, jsnLoad )
-  //  #undef CAP_TYPEOF 
-    #define KEEPXML( var ) ObjKeeper<decltype(var)>XMLKEEP##var( var, #var, xmlLoad )
-    #define KEEPJSN( var ) ObjKeeper<decltype(var)>XMLKEEP##var( var, #var, jsnLoad )
+    #define KEEPXML( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, xmlLoad )
+    #define KEEPJSN( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, jsnLoad )
+    #undef CAP_TYPEOF 
   #endif
-#else
-  #define KEEPXML( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, xmlLoad )
-  #define KEEPJSN( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, jsnLoad )
-  #define CAP_TYPEOF 1
 #endif
 
 

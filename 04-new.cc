@@ -29,7 +29,8 @@
 
 class PersintentExample
 { public:
-           int    aInteger;
+            int   aInteger;
+            int   counter;
   unsigned char   aByte;
      const char * ourString;
  unsigned short   anyType;
@@ -45,6 +46,7 @@ class PersintentExample
       aByte=  1;
   ourString= "Hello";
     anyType= 16384;
+    counter= 0;
  }
 
 
@@ -63,18 +65,19 @@ KEEP_LOADER( PersintentExample )
   KEEPITEM( ourString     );
   KEEPITEM( anyType       );
   KEEPITEM( uninitialized );
+  KEEPITEM( counter       );
 }
 
 
 int main( int argc, char ** argv )
 { PersintentExample * loaded= NULL;
 
-  LOADXML( loaded ); //  LOADJSN( loaded )
+  LOADJSN( loaded ); //  LOADJSN( loaded )
 
   if ( !loaded )
   { fprintf( stderr
            , "Config file was not in disk. About to createa a default one\n" );
-    SAVEXML( defaultObject, "loaded" ); //  SAVEJSN( defaultObject, "loaded" );
+    SAVEJSN( defaultObject, "loaded" ); //  SAVEJSN( defaultObject, "loaded" );
     fprintf( stderr
            , "Now, it's created, run one more time\n" );
     return( 0 );
@@ -82,13 +85,13 @@ int main( int argc, char ** argv )
 
 
   printf( "%s has been executed %d times (%s)"
-         , *argv, loaded->uninitialized, loaded->ourString );
+         , *argv, loaded->counter, loaded->ourString );
 
-  loaded->uninitialized++;         // Increase executions
+  loaded->counter++;         // Increase executions
 
-  SAVEXML( loaded );               // SAVEJSN( loaded );  // Return to disk
+  SAVEJSN( loaded );               // SAVEJSN( loaded );  // Return to disk
 
-  return( loaded->uninitialized );
+  return( loaded->counter );
 }
 
 

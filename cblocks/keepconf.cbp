@@ -121,6 +121,10 @@
 		<Unit filename="../intern.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../json-1.c">
+			<Option compilerVar="CC" />
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="../json.c">
 			<Option compilerVar="CC" />
 		</Unit>
