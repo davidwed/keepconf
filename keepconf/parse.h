@@ -38,7 +38,7 @@
   #define gcvt   _gcvt
   #define strdup _strdup
 #else
-  #include <alloca.h>
+//  #include <alloca.h>
   #define qlong long long
   #define qword unsigned long long
 #endif
@@ -125,7 +125,7 @@ ANSIC KeepSvr xmlLoad( const char * name
 ANSIC KeepSvr jsnLoad( const char * name
                      , void       * data  );
 
-ANSIC KeeperRec  *  jsonInit( KeeperRec *  
+ANSIC KeeperRec  *  jsonInit( KeeperRec *
                             , void      * autom );
 
 ANSIC          int jsonParse( KeeperRec  *
@@ -136,10 +136,10 @@ ANSIC      size_t jsonDigest( char    *ptr, size_t size
                             , size_t nmemb, void * userdata );
 
 ANSIC KeepSvr jsnInit( KeeperRec  * keep
-                     , void       * autom 
+                     , void       * autom
                      , const char * name );
 
-#define JSNINIT( k, w ) jsnInit( k, w, #w ) 
+#define JSNINIT( k, w ) jsnInit( k, w, #w )
 
 ANSIC KeepSvr jsnDone( KeeperRec  * keep );
 
