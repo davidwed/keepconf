@@ -81,7 +81,7 @@ int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
       case PHASE_STRING:
         if ( itm == '"' )
         { if ( jsn->ptr == jsn->buffVal )
-          { *jsn->ptr++= " ";             
+          { *jsn->ptr++= ' ';
           }
           *jsn->ptr= 0;
           jsn->phase= PHASE_ENDVALUE;
@@ -91,7 +91,7 @@ int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
         }
       continue;
 
-      case PHASE_TRUE: 
+      case PHASE_TRUE:
       case PHASE_FALSE:
         if ( itm > 32 )
         { continue;
@@ -100,13 +100,13 @@ int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
       break;
 
       case PHASE_NUMBER: switch( itm )
-      { case '.': case '-': 
-        case '0': case '1': case '2': case '3': case '4':   
+      { case '.': case '-':
+        case '0': case '1': case '2': case '3': case '4':
 	       case '5': case '6': case '7': case '8': case '9':
           *jsn->ptr++= itm;
         continue;
 
-        default: 
+        default:
           jsn->phase= PHASE_ENDVALUE;
         break;
     } }
@@ -163,7 +163,7 @@ int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
 
         case '{':                          /* Enter object */
           jsn->phase= PHASE_HUNT;
- 
+
           if ( jsn->array == INTEGER_NAN ) /* Compromised solution. Non array objects can omit typename */
           { pushElement( jsn->data, INTEGER_NAN /* Start of object */
                        , jsn->buffNme
@@ -178,7 +178,7 @@ int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
           }
 
           jsn->ptr= NULL;                /* Yet delivered      */
-        break;      
+        break;
 
 //        case '{':                   /* Enter object */
   //        jsn->phase= PHASE_HUNT;
@@ -212,7 +212,7 @@ int jsonParse( KeeperRec * jsn, const char * dat, int sz  )
           jsn->phase= PHASE_FALSE;
         continue;
 
-        default: 
+        default:
          puts("err");
          return( JSON_ERR_VALUE );
       }
@@ -397,10 +397,10 @@ ANSIC KeepSvr jsnDone( KeeperRec * keep )
 }
 
 ANSIC KeepSvr jsnInit( KeeperRec  * keep
-                     , void       * autom 
+                     , void       * autom
                      , const char * name )
-{ char buff[ 256 ]; int sz;
-  
+{// char buff[ 256 ]; int sz;
+
   keep->phase= PHASE_IDLE;
   keep->ptr  = NULL;
   keep->data = autom;
@@ -410,7 +410,7 @@ ANSIC KeepSvr jsnInit( KeeperRec  * keep
              , "config"
              , "style"
              , "json" );  /* Tell enter object  */
- // sz= sprintf( buff, "{ \"%s\": \n", name ); 
+ // sz= sprintf( buff, "{ \"%s\": \n", name );
  // jsonParse( keep, buff,  sz );
 
   return( jsnSave );
@@ -431,7 +431,7 @@ ANSIC KeepSvr jsnLoad( const char * name
   { int sz;
     char buff[ 4098 ];
 
-    KeeperRec keep; jsnInit( &keep, autom, name ); 
+    KeeperRec keep; jsnInit( &keep, autom, name );
 
     do
     { sz= fread( buff, 1, sizeof( buff ), file );

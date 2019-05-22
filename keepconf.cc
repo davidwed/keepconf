@@ -40,12 +40,12 @@ extern "C" char *   gcvt(   double number, int ndigit, char * buf);
 extern "C" char *  lltoa( long long value, char * buff, int radix );
 
 char *itoa( int n, char * buf, int base )
-{ sprintf(buf, "%ld", n);
+{ sprintf( buf, "%d", n );
   return   buf;
 }
 
-char *ltoa( int n, char * buf, int base )
-{ sprintf(buf, "%lu", n);
+char *ltoa( long n, char * buf, int base )
+{ sprintf( buf, "%ld", n );
   return   buf;
 }
 
@@ -142,7 +142,7 @@ ANSIC const char * pushElement( ObjConfRec & cnf
     }
 
     if ( !strcmp( type, "class" ))
-    { args->index= phase; 
+    { args->index= phase;
       if ( args > cnf.levels )
       { code->loader( cnf, code->holder );
       }
@@ -161,7 +161,7 @@ ANSIC const char * pushElement( ObjConfRec & cnf
     }
 
     args->index= phase;
-    if ( code->loader ) code->loader( cnf, code->holder ); 
+    if ( code->loader ) code->loader( cnf, code->holder );
 
 
     args->objs=   NULL;    // Mark arguments as invalid

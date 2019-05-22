@@ -28,7 +28,10 @@
 #ifndef KEEPCONF_H_INCLUDED
 #define KEEPCONF_H_INCLUDED
 
-#include <alloca.h>
+#ifndef _WIN32
+  #include <alloca.h>
+#endif
+
 #include "parse.h"
 
 #ifdef __cplusplus // Allow mix witth c code
@@ -260,22 +263,7 @@ template <class T> Registrar< T > * findClassByName( const char * name )
 
 
 
-  template <typename T>  ITEM_DONE loadObject( struct ObjConfRec & cnf, T & t )
-  { void load( ObjConfRec &, T & obj );
-
-    if ( cnf.code == OBJECT_LOAD )
-    { if ( !cnf.info->objs )
-      {// cnf.info->objs= typeId( t );    // JSON lacks this
-      }
-
-      if ( !cnf.value )                   // closing object
-      { buildObject( t );
-        return( ITEM_BUILT );
-    } }
-
-    load( cnf, t );
-    return( ITEM_LOADED );              // Load or save
-  }
+template <typename T>  ITEM_DONE loadObject( struct ObjConfRec & cnf, T & t );
 
 struct ObjConfRec
 { int code;
@@ -310,9 +298,9 @@ struct ObjConfRec
       load( *this, t[ idx ] );
       idx++;
       leave( idx < els ? idx : 0  );
-    }    
-   
-    return( ITEM_VOID ); 
+    }
+
+    return( ITEM_VOID );
   }
 
   template <class T> ITEM_DONE save( T & t, const char * key, const char * id )
@@ -377,7 +365,7 @@ struct ObjConfRec
 
   template <class T> KeepLoader loadObjectCast(  )
   { return( reinterpret_cast< KeepLoader >( loadObject<T> ));
-  } 
+  }
 
   template <class T> ITEM_DONE load( T *& t, const char * key, const char * id )
   { if ( strcmp( info->names, key ))
@@ -408,10 +396,10 @@ struct ObjConfRec
     if ( idx < 0 )
     { fprintf( stderr, "Index of %d (%d) for %s %s\n"
              , info->index, els
-             , key, id ); 
+             , key, id );
       info->holder= t + idx;
     }
-    
+
     info->holder= t + idx;
     info->loader= loadObjectCast<T>();
 
@@ -664,6 +652,22 @@ struct ObjConfRec
 
 };
 
+template <typename T>  ITEM_DONE loadObject( struct ObjConfRec & cnf, T & t )
+{ void load( ObjConfRec &, T & obj );
+
+  if ( cnf.code == OBJECT_LOAD )
+  { if ( !cnf.info->objs )
+    {// cnf.info->objs= typeId( t );    // JSON lacks this
+    }
+
+    if ( !cnf.value )                   // closing object
+    { buildObject( t );
+      return( ITEM_BUILT );
+  } }
+
+  load( cnf, t );
+  return( ITEM_LOADED );              // Load or save
+}
 
 
 /** ================================================= [ JACS, 10/01/2006 ] == *\
@@ -812,7 +816,7 @@ template < typename T > int copy( T & toLoad,  const char * varName
   #ifndef __GNUG__
     #define KEEPXML( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, xmlLoad )
     #define KEEPJSN( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, jsnLoad )
-    #undef CAP_TYPEOF 
+    #undef CAP_TYPEOF
   #endif
 #endif
 
