@@ -123,7 +123,7 @@ ANSIC const char * pushElement( ObjConfRec & cnf
   ObjLevelRec * code= cnf.info-1;   // Current loader
   ObjLevelRec * args= cnf.info;     // Current data holder
 
- // printf( "push (%d) %10s %10s %10s\n", phase, name, type, value );
+//  printf( "push (%d) %10s %10s %10s\n", phase, name, type, value );
 
   if ( name )                       // Enter object or stamp value
   { if ( *value )
