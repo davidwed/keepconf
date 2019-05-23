@@ -72,24 +72,23 @@ KEEP_LOADER( PersintentExample )
 int main( int argc, char ** argv )
 { PersintentExample * loaded= NULL;
 
-  LOADJSN( loaded ); //  LOADJSN( loaded )
+  LOADXML( loaded ); //  LOADXML( loaded )
 
   if ( !loaded )
   { fprintf( stderr
            , "Config file was not in disk. About to createa a default one\n" );
-    SAVEJSN( defaultObject, "loaded" ); //  SAVEJSN( defaultObject, "loaded" );
+    SAVEXML( defaultObject, "loaded" ); //  SAVEJSN( defaultObject, "loaded" );
     fprintf( stderr
            , "Now, it's created, run one more time\n" );
     return( 0 );
   }
-
 
   printf( "%s has been executed %d times (%s)"
          , *argv, loaded->counter, loaded->ourString );
 
   loaded->counter++;         // Increase executions
 
-  SAVEJSN( loaded );               // SAVEJSN( loaded );  // Return to disk
+  SAVEXML( loaded );               // SAVEXML( loaded );  // Return to disk
 
   return( loaded->counter );
 }

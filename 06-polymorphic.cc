@@ -48,8 +48,8 @@ typedef struct ListRec
 
 /* Must tell how to walk the list
  */
-  friend ListRec * nextObject(  ListRec  * hld ) { return( hld->next ); }
-  friend ListRec * firstObject( ListRec  * hld ) { return( hld       ); }
+  friend ListRec * nextObject(  ListRec * hld ) { return( hld->next ); }
+  friend ListRec * firstObject( ListRec * hld ) { return( hld       ); }
 
 } ListRec;
 
@@ -59,7 +59,7 @@ typedef struct ListRec
  *  Now we can define our objects
  */
 
-typedef struct Common
+struct Common
 { int a;
   int b;
   int c;
@@ -106,7 +106,7 @@ KEEP_LOADER( Common )
 }
 
 REGISTERCLASS( ListRec1 )
-{ KEEPROOT( Common );
+{ KEEPROOT( Common );      // Process parent class
 
   KEEPITEM( arr );
   KEEPITEM( ownInteger );
@@ -173,7 +173,7 @@ ListRec * createDefaultConfig( )
 
 KEEPXML( storer06 );  // This does the job ( xml version )
 
-//KEEPJSN( storer06 );  // This does the job ( json version )
+//KEEPJSN( storer06 );  // No json version
 
 int main( int argc, char ** argv )
 { if ( !storer06 )     // No config on disk yet, let´s create one of them
@@ -185,8 +185,6 @@ int main( int argc, char ** argv )
 //
 // Iterate the recovered list,  modifying some value based on the type
 //
-
-  puts("");
 
   for( ListRec * ptr= storer06->next
      ;           ptr

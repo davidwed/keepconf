@@ -207,7 +207,7 @@ template < class T > struct Registrar
     next= xmlconfFlexSeed;
     xmlconfFlexSeed= this;
 
-    create= ::newObject;
+    create= ::newObject<T>;
     loader= reinterpret_cast< KeepLoader >( ld );
   }
 
@@ -260,10 +260,11 @@ template <class T> Registrar< T > * findClassByName( const char * name )
 /*  The struct starts here
  */
 
-
-
-
 template <typename T>  ITEM_DONE loadObject( struct ObjConfRec & cnf, T & t );
+
+/* Default pointer walkers
+ */
+//template <typename T> T * nextObject( T * ) { return( NULL ); }
 
 struct ObjConfRec
 { int code;
@@ -290,7 +291,7 @@ struct ObjConfRec
 
   const char * leave( int idx );
 
-  template <class T, int els> ITEM_DONE save( T (& t)[els], const char * key, const char * id ) // ene 2019
+  template <class T, int els> ITEM_DONE save( T (& t)[ els ], const char * key, const char * id ) // ene 2019
   { void load( ObjConfRec &, T & );
 
     int idx= 0; while( idx < els )
@@ -444,13 +445,6 @@ struct ObjConfRec
 
     T * newObj= fact->create();
 
-//    if ( t == streamer )               // No owner dependent
-//    { newObj->linkObject( streamer );
-//    }
-//    else                               // Owner dependent
-//    { streamer->linkObject( newObj );
-//    }
-
     streamer.linkObject( newObj );
 
     info->holder= newObj;
@@ -481,8 +475,30 @@ struct ObjConfRec
 
 /* For heap objects
  */
+  template <class T> ITEM_DONE launch( T ** & t, const char * key )
+  { void load( ObjConfRec &, T & );
+    int idx; int els; T * ptr;
+  
+    switch( code )
+    { case OBJECT_SAVE:               // SAVE version
+        els= 1; ptr= *t; while( ptr= nextObject( ptr ) )  // Figure out elements
+        { els++; 
+        } 
+        
+        idx= 0; ptr= *t; while( idx < els )
+        { enter( key, key, NULL, idx ? idx : -els );
+          load( *this, *ptr ); ptr= nextObject( ptr );
+          idx++;
+          leave( idx < els ? idx : 0  );
+        }
+      break;
+    }
+  }
+
   template <class T> ITEM_DONE launch( T * & t, const char * key )
-  { switch( code )
+  {        
+ 
+    switch( code )
     { case OBJECT_SAVE:               // SAVE version
         save( *t, key, typeId( t ) ); // Same as allocated object
       break;
@@ -513,18 +529,17 @@ struct ObjConfRec
 
   template <class T, int els> ITEM_DONE launch( T (&t)[els], const char * key )
   { switch( code )
-    { case OBJECT_SAVE: return( save( t, key,key ));  //  SAVE version
-      case OBJECT_LOAD: return( load( t, key,key ));  //  LOAD version
+    { case OBJECT_SAVE: return( save( t, key, key ));  //  SAVE version
+      case OBJECT_LOAD: return( load( t, key, key ));  //  LOAD version
     }
     return( ITEM_VOID );
   }
 
   template< class T
           , class O> ITEM_DONE launch( T * & t, const char * key, O & streamer )
-  {  switch( code )                   //  LDROOT must be skipped
+  { switch( code )                   //  LDROOT must be skipped
     { case OBJECT_LOAD: return( load( t, key, streamer )); //  LOAD version
-      case OBJECT_SAVE://if ( *info[-1].objs )
-                        return( save( t, key, streamer )); //  SAVE version
+      case OBJECT_SAVE: return( save( t, key, streamer )); //  SAVE version
     }
     return( ITEM_VOID );
   }
@@ -656,9 +671,9 @@ template <typename T>  ITEM_DONE loadObject( struct ObjConfRec & cnf, T & t )
 { void load( ObjConfRec &, T & obj );
 
   if ( cnf.code == OBJECT_LOAD )
-  { if ( !cnf.info->objs )
-    {// cnf.info->objs= typeId( t );    // JSON lacks this
-    }
+  { //if ( !cnf.info->objs )
+    //{ cnf.info->objs= typeId( t );    // JSON lacks this
+    //}
 
     if ( !cnf.value )                   // closing object
     { buildObject( t );
@@ -808,17 +823,21 @@ template < typename T > int copy( T & toLoad,  const char * varName
 #define SAVEJSN( var, ... ) copy( #var,  var, jsnSave, ##__VA_ARGS__ )
 
 
-#define KEEPXML( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, xmlLoad )
-#define KEEPJSN( var ) ObjKeeper<typeof(var)>XMLKEEP##var( var, #var, jsnLoad )
+#define KEEPXML( var ) ObjKeeper< decltype(var) >XMLKEEP##var( var, #var, xmlLoad )
+#define KEEPJSN( var ) ObjKeeper< decltype(var) >XMLKEEP##var( var, #var, jsnLoad )
+
+#define KEEPADDRXML( var ) ObjKeeper< decltype(var) >XMLKEEP##var( &var, #var, xmlLoad )
+#define KEEPADDRJSN( var ) ObjKeeper< decltype(var) >XMLKEEP##var( &var, #var, jsnLoad )
+
 #define CAP_TYPEOF 1
 
-#if __cplusplus < 201103L
-  #ifndef __GNUG__
-    #define KEEPXML( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, xmlLoad )
-    #define KEEPJSN( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, jsnLoad )
-    #undef CAP_TYPEOF
-  #endif
-#endif
+//#if __cplusplus < 201103L
+//  #ifndef __GNUG__
+//    #define KEEPXML( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, xmlLoad )
+//    #define KEEPJSN( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, jsnLoad )
+//    #undef CAP_TYPEOF
+//  #endif
+//#endif
 
 
 /* This trick allows to persist a bunch of global variables
@@ -833,7 +852,7 @@ void load( ObjConfRec & cnf, TYPE##name &  )
 #define KEEPJSNLIST( name ) KEEPBUNCH( name, jsnLoad )
 
 #define KEEP_LOADER( T ) void load( ObjConfRec & cnf, T & hld )
-#define KEEP_STORED( obj ) ObjStorer< typeof( obj )  > storerOf##obj( obj, #obj )
+//#define KEEP_STORED( obj ) ObjStorer< typeof( obj )  > storerOf##obj( obj, #obj )
 
 
 /*    Hide implementation detais to user. Not very purist, but c++ does not
