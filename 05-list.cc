@@ -32,36 +32,19 @@ struct Aemet
   const char * data;
   const char * metadata;
   int integer;
-  
-  Aemet()
-  { data="hola123";
-    metadata="que124";
-    next= NULL;
-    integer= 0;
-  }
 
-  Aemet( Aemet * prev )
+  Aemet( Aemet * prev )  // The constructor must be capable to populate the list
   { next= prev;
-    data="hola123";
-    metadata="que124";
-    integer= 0;
-  }
-  
-/* Must tell how to populate the list
- */
-  friend void linkObject( Aemet * hld )
-  { //hld->next= next; next= hld;
-   // fprintf( stderr, "Linking object %s over %s\n", typeId( *hld ), typeId( *this ) );
   }
 
 /* Must tell how to walk the list
  */
-  friend Aemet * nextObject(  Aemet * hld ) 
-  { return( hld->next ); 
+  friend Aemet * nextObject(  Aemet * hld )
+  { return( hld->next );
   }
 
   friend void buildObject( Aemet & hld )
-  { fprintf( stderr, "Data %s Meta %s\n", hld.data, hld.metadata );
+  { fprintf( stderr, "Inizializing Data %s Meta %s\n", hld.data, hld.metadata );
   }
 
 };
@@ -69,28 +52,31 @@ struct Aemet
 KEEP_LOADER( Aemet )
 { KEEPITEM( data      );
   KEEPITEM( metadata  );
-
   KEEPITEM( integer  );
 };
 
+Aemet * list= NULL;
 
 
-Aemet ** list; 
-
-// KEEPJSN( list );  // This does the job ( json version )
-
-
-KEEPXML( list );  // This does the job ( xml version )
+ KEEPJSNLST( list );  // This does the job ( xml version )
 
 
 int main( int argc, char ** argv )
-{ if ( list ) 
+{ if ( list )
   { puts( "yet created" );
   }
-  else
-  { *list= new Aemet; 
+  else                   // Create a little test list
+  { list= new Aemet( list ); list->integer= 1; list->data= "Hello"; list->metadata= "World";
+    list= new Aemet( list ); list->integer= 2; list->data= "Hello"; list->metadata= "World";
+    list= new Aemet( list ); list->integer= 3; list->data= "Hello"; list->metadata= "World";
   }
-  return( 0 );
+
+  list->integer++;
+  printf( "Test results %d %d %d\n"
+        , list->integer
+        , list->next->integer
+        , list->next->next->integer );
+  return( list->integer );
 }
 
 

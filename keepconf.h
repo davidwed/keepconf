@@ -478,13 +478,13 @@ struct ObjConfRec
   template <class T> ITEM_DONE launch( T ** & t, const char * key )
   { void load( ObjConfRec &, T & );
     int idx; int els; T * ptr;
-  
+
     switch( code )
     { case OBJECT_SAVE:               // SAVE version
-        els= 1; ptr= *t; while( ptr= nextObject( ptr ) )  // Figure out elements
-        { els++; 
-        } 
-        
+        els= 1; ptr= *t; while(( ptr= nextObject( ptr ) ))  // Figure out elements
+        { els++;
+        }
+
         idx= 0; ptr= *t; while( idx < els )
         { enter( key, key, NULL, idx ? idx : -els );
           load( *this, *ptr ); ptr= nextObject( ptr );
@@ -492,12 +492,24 @@ struct ObjConfRec
           leave( idx < els ? idx : 0  );
         }
       break;
+
+      case OBJECT_LOAD:
+        if ( strcmp( info->names, key ))
+        { return( ITEM_NAMES );
+        }
+
+        *t= new T( *t );                   // Must create on load, the parameter populates the list
+        info->holder= *t;                   // Tell engine also
+        info->loader= loadObjectCast<T>();
+      return( ITEM_LOADED );
+
     }
+    return( ITEM_VOID );
   }
 
   template <class T> ITEM_DONE launch( T * & t, const char * key )
-  {        
- 
+  {
+
     switch( code )
     { case OBJECT_SAVE:               // SAVE version
         save( *t, key, typeId( t ) ); // Same as allocated object
@@ -816,28 +828,35 @@ template < typename T > int copy( T & toLoad,  const char * varName
   return( ! loader( file ? file : varName, &storer ) );
 }
 
+#if __cplusplus < 201103L
+  #ifdef __GNUG__
+    #define TYPEOF typeof
+  #else
+    #undef CAP_TYPEOF
+  #endif
+#else
+  #define TYPEOF decltype
+  #define CAP_TYPEOF 1
+#endif
+
+
 #define LOADXML( var, ... ) copy(  var, #var, xmlLoad, ##__VA_ARGS__ )
 #define SAVEXML( var, ... ) copy( #var,  var, xmlSave, ##__VA_ARGS__ )
 
 #define LOADJSN( var, ... ) copy(  var, #var, jsnLoad, ##__VA_ARGS__ )
 #define SAVEJSN( var, ... ) copy( #var,  var, jsnSave, ##__VA_ARGS__ )
 
+#define LOADXMLLST( var, ... ) { TYPEOF(var) * tmp= &var; copy(  tmp, #var, xmlLoad, ##__VA_ARGS__ ); }
+#define SAVEXMLLST( var, ... ) { TYPEOF(var) * tmp= &var; copy( #var,  tmp, xmlSave, ##__VA_ARGS__ ); }
 
-#define KEEPXML( var ) ObjKeeper< decltype(var) >XMLKEEP##var( var, #var, xmlLoad )
-#define KEEPJSN( var ) ObjKeeper< decltype(var) >XMLKEEP##var( var, #var, jsnLoad )
+#define LOADJSNLST( var, ... ) { TYPEOF(var) * tmp= &var; copy(  tmp, #var, jsnLoad, ##__VA_ARGS__ ); }
+#define SAVEJSNLST( var, ... ) { TYPEOF(var) * tmp= &var; copy( #var,  tmp, jsnSave, ##__VA_ARGS__ ); }
 
-#define KEEPADDRXML( var ) ObjKeeper< decltype(var) >XMLKEEP##var( &var, #var, xmlLoad )
-#define KEEPADDRJSN( var ) ObjKeeper< decltype(var) >XMLKEEP##var( &var, #var, jsnLoad )
 
-#define CAP_TYPEOF 1
-
-//#if __cplusplus < 201103L
-//  #ifndef __GNUG__
-//    #define KEEPXML( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, xmlLoad )
-//    #define KEEPJSN( var, t ) ObjKeeper<t>XMLKEEP##var( var, #var, jsnLoad )
-//    #undef CAP_TYPEOF
-//  #endif
-//#endif
+#define KEEPXML( var ) ObjKeeper<TYPEOF(var)>XMLKEEP##var( var, #var, xmlLoad )
+#define KEEPJSN( var ) ObjKeeper<TYPEOF(var)>XMLKEEP##var( var, #var, jsnLoad )
+#define KEEPXMLLST( var ) TYPEOF(var) * tmpXMLKEEP##var= &var; ObjKeeper<TYPEOF(&var)>XMLKEEP##var( tmpXMLKEEP##var, #var, xmlLoad )
+#define KEEPJSNLST( var ) TYPEOF(var) * tmpXMLKEEP##var= &var; ObjKeeper<TYPEOF(&var)>XMLKEEP##var( tmpXMLKEEP##var, #var, jsnLoad )
 
 
 /* This trick allows to persist a bunch of global variables
