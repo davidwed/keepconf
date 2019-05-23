@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- *     FILE: 01-array.cc
+ *     FILE: 07-array.cc
  *     DATE: jun 2017
  *
  *  DESCRIPCION: keeps stored an array of objects among executions.
@@ -36,24 +36,25 @@ struct Aemet
   const char * data;
   const char * metadata;
 
-  int arr[5];
+ // int arr[ 5 ];
 };
 
 KEEP_LOADER( Aemet )
 { KEEPITEM( data      );
   KEEPITEM( metadata  );
-  KEEPITEM( arr       );
+ // KEEPITEM( arr       );
 };
 
-struct Aemet tested[ 10 ];
+struct Aemet array[ 10 ];
 
 
-KEEPJSN( tested );  // This does the job ( xml version ) KEEPJSN( tested );  ( json version )
+ KEEPXML( array );  // This does the job ( xml version ) 
+// KEEPJSN( array );  // This does the job  ( json version )
 
 int main( int argc, char ** argv )
 { printf( "%s has %s\n"
-        , tested[ 9 ].metadata
-        , tested[ 9 ].data );
+        , array[ 9 ].metadata
+        , array[ 9 ].data );
 
   return( 0 );
 }

@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
- *     FILE: 01-integer.cc
+ *     FILE: 05-list.cc
  *     DATE: jun 2017
  *
  *  DESCRIPCION: keeps stored an integer value among executions.
@@ -28,38 +28,68 @@
 #include "keepconf.h"
 
 struct Aemet
-{ Aemet()
-  { data="hola123";
-    metadata="que124";
-   }
-
+{ Aemet * next;
   const char * data;
   const char * metadata;
+  int integer;
+  
+  Aemet()
+  { data="hola123";
+    metadata="que124";
+    next= NULL;
+    integer= 0;
+  }
+
+  Aemet( Aemet * prev )
+  { next= prev;
+    data="hola123";
+    metadata="que124";
+    integer= 0;
+  }
+  
+/* Must tell how to populate the list
+ */
+  friend void linkObject( Aemet * hld )
+  { //hld->next= next; next= hld;
+   // fprintf( stderr, "Linking object %s over %s\n", typeId( *hld ), typeId( *this ) );
+  }
+
+/* Must tell how to walk the list
+ */
+  friend Aemet * nextObject(  Aemet * hld ) 
+  { return( hld->next ); 
+  }
+
+  friend void buildObject( Aemet & hld )
+  { fprintf( stderr, "Data %s Meta %s\n", hld.data, hld.metadata );
+  }
+
 };
 
 KEEP_LOADER( Aemet )
 { KEEPITEM( data      );
   KEEPITEM( metadata  );
+
+  KEEPITEM( integer  );
 };
 
-void buildObject( Aemet & hld )
-{ fprintf( stderr, "Data %s Meta %s\n", hld.data, hld.metadata );
-}
 
 
-Aemet * tested; 
+Aemet ** list; 
 
-// KEEPJSN( tested );  // This does the job ( json version )
+// KEEPJSN( list );  // This does the job ( json version )
 
 
-//KEEPXML( tested );  // This does the job ( xml version )
+KEEPXML( list );  // This does the job ( xml version )
 
 
 int main( int argc, char ** argv )
-{ 
-
-  LOADJSN( tested );
-
+{ if ( list ) 
+  { puts( "yet created" );
+  }
+  else
+  { *list= new Aemet; 
+  }
   return( 0 );
 }
 

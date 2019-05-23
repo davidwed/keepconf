@@ -1,5 +1,5 @@
 {\rtf1\ansi\ansicpg1252\deff0\deflang3082{\fonttbl{\f0\fswiss\fcharset0 Arial;}}
-{\colortbl ;\red0\green0\blue255;}
+{\colortbl ;\red0\green0\blue255;\red128\green128\blue128;}
 {\*\generator Msftedit 5.41.15.1515;}\viewkind4\uc1\pard\b\f0\fs20 Main goal.\par
 \pard\ri-1726\b0\par
 1) Keep persistent variable and object values beween executions, whith a few lines of code, may let to the templates do all the job.\par
@@ -113,8 +113,25 @@ El caso mas complejo es cuando hay una lista en la que los objetos no son iguale
 \b 5, Loading an array:\b0\par
 \b\par
 \par
-6, A tree of arbitrary objects:\par
-\b0\par
+7, A tree of arbitrary objects:\par
+\par
+\b0  This is, by far, the more advanced example.\par
+It allows to have a tree of arbitrary objects stored on disk.\par
+The way to add this capability over existing objects,  is tell how to reach the first and the next object in the list, the saver uses this to walk the tree.\par
+\par
+\cf1   friend type * type::nextObject(  type * hld ) \{ \cf2 return( hld->next ); \cf1\}\par
+  friend type * type::firstObject(  type * hld ) \{ \cf2 return( hld       ); \cf1\}\par
+\par
+\cf0 And how to add a recently loaded object to the list (used when loding from disk)\par
+\par
+\cf1   void type::linkObject( type * hld )\par
+  \{ \cf2 hld->next= next; next= hld;\par
+\cf1   \}\par
+\cf0\par
+Althought this code relies only on templates, and no virtualization is used, the runtime must know about the loaded object, in this case of arbitrary list, so the implied objects must be virtual. Declaring linkObject virtual may be enough fot this, but is not neccesary in case of yet virtual objects.\par
+\par
+ Originally created and tested this code on the template version of good friend TUI. Here you are a screnshoot. The very polimorphic items on screen are stored this way in the template port. This made possible the deletion of thousands of lines of code on the original code.\par
+\par
   Jason is much simpler than XML. It Know about variable names, but not about type names and array indexes. This leaves you out of combat this example, at least in the form of the basic specification.\par
 \par
 \b C++ language limitations:\b0\par
