@@ -29,6 +29,10 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <limits.h>
+
+
 
 #define POOL_START_SIZE 2   /* First data pool */
 
@@ -136,5 +140,35 @@ int strcasecmp(const char *s1, const char *s2)
       return (0);
 
   return (tolower(*us1) - tolower(*--us2));
+}
+
+char *lltoa ( long long val, char * buf, int base )
+{ int i = 62;
+  int sign = (val < 0);
+  if (sign) val = -val;
+
+  if(val == 0) return "0";
+
+  for(; val && i ; --i, val /= base) 
+  { buf[i] = "0123456789abcdef"[val % base];
+  }
+
+  if(sign) 
+  { buf[i--] = '-';
+  }
+
+  return &buf[i+1];
+}
+
+char *ulltoa ( unsigned long long val, char * buf, int base )
+{ int i = 62;
+
+  if (val == 0) return "0";
+
+  for(; val && i ; --i, val /= base) 
+  { buf[i] = "0123456789abcdef"[val % base];
+  }
+
+  return &buf[i+1];
 }
 

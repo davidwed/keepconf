@@ -21,7 +21,7 @@
  *     FILE: 05-list.cc
  *     DATE: jun 2017
  *
- *  DESCRIPCION: keeps stored an integer value among executions.
+ *  DESCRIPCION: keeps stored an arbitrary collection of objects
  *
  */
 
@@ -33,7 +33,7 @@ struct Aemet
   const char * metadata;
   int integer;
 
-  Aemet( )  // The constructor must be capable to populate the list
+  Aemet( ) 
   { data= "Hello"; 
     metadata= "World";
     next= NULL;
@@ -81,6 +81,7 @@ Aemet * list= NULL;
 
 
 KEEPXML( list );  // This does the job ( xml version )
+// KEEPJSN( list );  // This does the job ( json version )
 
 
 int main( int argc, char ** argv )

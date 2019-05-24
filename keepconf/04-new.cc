@@ -83,7 +83,7 @@ int main( int argc, char ** argv )
     return( 0 );
   }
 
-  printf( "%s has been executed %d times (%s)"
+  printf( "%s has been executed %d times (%s)\n"
          , *argv, loaded->counter, loaded->ourString );
 
   loaded->counter++;         // Increase executions

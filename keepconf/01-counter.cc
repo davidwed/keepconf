@@ -25,15 +25,15 @@
  *
  */
 
-#include "keepconf.h"      /// 1º) Include the required templates
+#include "keepconf.h"      /// 1) Include the required templates
 
 int counter;
 
-KEEPJSN( counter );         /// 2º) This does the job ( xml version )
-//KEEPXML( counter );         /// 2º) This does the job ( xml version )
+KEEPJSN( counter );         /// 2) This does the job ( json version )
+//KEEPXML( counter );         /// 2) This does the job ( xml version )
 
 int main( int argc, char ** argv )
-{ printf( "%s has been executed %d times"
+{ printf( "%s has been executed %d times\n"
         , *argv, counter );
 
   counter++;         // Increase executions

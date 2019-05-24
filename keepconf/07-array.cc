@@ -35,14 +35,11 @@ struct Aemet
 
   const char * data;
   const char * metadata;
-
- // int arr[ 5 ];
 };
 
 KEEP_LOADER( Aemet )
 { KEEPITEM( data      );
   KEEPITEM( metadata  );
- // KEEPITEM( arr       );
 };
 
 struct Aemet array[ 10 ];

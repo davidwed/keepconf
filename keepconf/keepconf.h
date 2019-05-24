@@ -71,12 +71,13 @@ enum  ITEM_DONE
 #ifdef _MSC_VER
   #define qlong __int64
   #define qword __uint64
-  #define ulltoa _ui64toa
+//  #define ulltoa _ui64toa
   #define ltoa   _ltoa
   #define itoa   _itoa
   #define gcvt   _gcvt
   #define strdup _strdup
 #else
+  #define _OPEN_SYS_ITOA_EXT
   #define qlong long long
   #define qword unsigned long long
 #endif

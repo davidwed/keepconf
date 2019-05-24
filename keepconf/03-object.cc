@@ -65,8 +65,8 @@ KEEP_LOADER( PersintentExample )
 }
 
 
-//KEEPXML( objectExample );  // This does the job ( xml version )
-KEEPJSN( objectExample );  // This does the job ( json version )
+KEEPXML( objectExample );  // This does the job ( xml version )
+//KEEPJSN( objectExample );  // This does the job ( json version )
 
 
 /**
