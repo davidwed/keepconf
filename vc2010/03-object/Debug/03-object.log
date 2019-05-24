@@ -1,0 +1,47 @@
+﻿Build started 24/05/2019 10:14:42.
+     1>Project "X:\unicodecs-code\keepconf\vc2010\03-object\03-object.vcxproj" on node 2 (build target(s)).
+     1>InitializeBuildStatus:
+         Creating "Debug\03-object.unsuccessfulbuild" because "AlwaysCreate" was specified.
+       ClCompile:
+         C:\Archivos de programa\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt "..\..\02-bunch.cc" ..\..\keepconf.cc
+         keepconf.cc
+     1>x:\unicodecs-code\keepconf\keepconf.h(92): warning C4273: '_strdup' : inconsistent dll linkage
+                 c:\archivos de programa\microsoft visual studio 10.0\vc\include\string.h(135) : see previous definition of '_strdup'
+     1>x:\unicodecs-code\keepconf\keepconf.cc(37): warning C4273: '_ui64toa' : inconsistent dll linkage
+                 c:\archivos de programa\microsoft visual studio 10.0\vc\include\stdlib.h(455) : see previous definition of '_ui64toa'
+     1>x:\unicodecs-code\keepconf\keepconf.cc(38): warning C4273: '_gcvt' : inconsistent dll linkage
+                 c:\archivos de programa\microsoft visual studio 10.0\vc\include\stdlib.h(729) : see previous definition of '_gcvt'
+     1>x:\unicodecs-code\keepconf\keepconf.cc(43): warning C4273: '_itoa' : inconsistent dll linkage
+                 c:\archivos de programa\microsoft visual studio 10.0\vc\include\stdlib.h(451) : see previous definition of '_itoa'
+     1>x:\unicodecs-code\keepconf\keepconf.cc(48): warning C4273: '_ltoa' : inconsistent dll linkage
+                 c:\archivos de programa\microsoft visual studio 10.0\vc\include\stdlib.h(487) : see previous definition of '_ltoa'
+     1>x:\unicodecs-code\keepconf\keepconf.cc(282): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+         02-bunch.cc
+     1>x:\unicodecs-code\keepconf\keepconf.h(92): warning C4273: '_strdup' : inconsistent dll linkage
+                 c:\archivos de programa\microsoft visual studio 10.0\vc\include\string.h(135) : see previous definition of '_strdup'
+         Generating Code...
+         C:\Archivos de programa\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt ..\..\intern.c ..\..\json.c ..\..\xml.c
+         xml.c
+         json.c
+         intern.c
+     1>x:\unicodecs-code\keepconf\intern.c(95): warning C4113: 'void (__cdecl *)()' differs in parameter lists from 'void (__cdecl *)(void)'
+     1>x:\unicodecs-code\keepconf\intern.c(103): warning C4018: '<' : signed/unsigned mismatch
+         Generating Code...
+       Link:
+         C:\Archivos de programa\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"X:\unicodecs-code\keepconf\vc2010\Debug\03-object.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /ManifestFile:"Debug\03-object.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"X:\unicodecs-code\keepconf\vc2010\Debug\03-object.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"X:\unicodecs-code\keepconf\vc2010\Debug\03-object.lib" /MACHINE:X86 "Debug\02-bunch.obj"
+         Debug\intern.obj
+         Debug\json.obj
+         Debug\keepconf.obj
+         Debug\xml.obj
+            Creating library X:\unicodecs-code\keepconf\vc2010\Debug\03-object.lib and object X:\unicodecs-code\keepconf\vc2010\Debug\03-object.exp
+         03-object.vcxproj -> X:\unicodecs-code\keepconf\vc2010\Debug\03-object.exe
+       Manifest:
+         C:\Archivos de programa\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"X:\unicodecs-code\keepconf\vc2010\Debug\03-object.exe;#1" /manifest "Debug\03-object.exe.intermediate.manifest"
+       FinalizeBuildStatus:
+         Deleting file "Debug\03-object.unsuccessfulbuild".
+         Touching "Debug\03-object.lastbuildstate".
+     1>Done Building Project "X:\unicodecs-code\keepconf\vc2010\03-object\03-object.vcxproj" (build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:01.65

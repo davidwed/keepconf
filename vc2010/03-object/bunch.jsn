@@ -1,0 +1,6 @@
+{ "bunch":
+  { "counter":  2 
+  , "message": "hello"
+  , "flag":  123 
+  }
+}

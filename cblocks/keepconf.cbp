@@ -117,6 +117,12 @@
 		<Unit filename="../07-array.cc">
 			<Option target="07-array" />
 		</Unit>
+		<Unit filename="../array.jsn">
+			<Option target="07-array" />
+		</Unit>
+		<Unit filename="../array.xml">
+			<Option target="07-array" />
+		</Unit>
 		<Unit filename="../articulo.rtf" />
 		<Unit filename="../intern.c">
 			<Option compilerVar="CC" />
@@ -132,8 +138,17 @@
 		<Unit filename="../keepconf.h">
 			<Option target="07-array" />
 		</Unit>
+		<Unit filename="../list.jsn">
+			<Option target="05-list" />
+		</Unit>
+		<Unit filename="../list.xml">
+			<Option target="05-list" />
+		</Unit>
 		<Unit filename="../parse.h">
 			<Option target="07-array" />
+		</Unit>
+		<Unit filename="../storer06.xml">
+			<Option target="06-polymorphic" />
 		</Unit>
 		<Unit filename="../xml.c">
 			<Option compilerVar="CC" />
