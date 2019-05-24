@@ -32,7 +32,7 @@
    // #define alloca _malloca
   #define qlong __int64
   #define qword __uint64
-  #define ulltoa _ui64toa
+//  #define ulltoa _ui64toa
   #define ltoa   _ltoa
   #define itoa   _itoa
   #define gcvt   _gcvt

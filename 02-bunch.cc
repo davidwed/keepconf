@@ -26,7 +26,7 @@
  */
 
 
-#include "keepconf.h"  /// 1º) Include the required templates
+#include "keepconf.h"  /// 1) Include the required templates
 
 
 /* Initialized values, may be seen as "default values", on config file lack
@@ -36,7 +36,6 @@ const char * message= "hello";
 unsigned char   flag= 123;
 
 //KEEPXMLLIST( bunch )  // Comment out that and comment in next lilne an for xml version
-
 KEEPJSNLIST( bunch )
 { KEEPGLOB( counter );
   KEEPGLOB( message );
