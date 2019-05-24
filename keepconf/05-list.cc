@@ -33,18 +33,40 @@ struct Aemet
   const char * metadata;
   int integer;
 
-  Aemet( Aemet * prev )  // The constructor must be capable to populate the list
-  { next= prev;
+  Aemet( )  // The constructor must be capable to populate the list
+  { data= "Hello"; 
+    metadata= "World";
+    next= NULL;
+    integer= 0;
   }
 
-/* Must tell how to walk the list
- */
-  friend Aemet * nextObject(  Aemet * hld )
-  { return( hld->next );
-  }
+// Must tell how to walk the list (toAdd==NULL) or link a new element (toAdd!=NULL)
+//
+  friend Aemet * nextObject( Aemet * hld
+                           , Aemet * toAdd )  
+  { if ( toAdd )           // Write version, link element
+    { toAdd->next= NULL;   // Terminate list
+
+      if ( hld )           // Yet seeded
+      { while( hld->next ) // Reach the end of the list
+        { hld= hld->next;
+        }
+        hld->next= toAdd;  // Link new element at the end
+        return( NULL );    // Keep the seed 
+      }
+
+      return( toAdd );    
+        
+
+      //toAdd->next= hld;   // For inverse LIFO lists
+      //return( toAdd );    // Actualize list holder 
+    } 
+    else                  // Read version, walk list 
+    { return( hld ? hld->next : NULL );
+  } }
 
   friend void buildObject( Aemet & hld )
-  { fprintf( stderr, "Inizializing Data %s Meta %s\n", hld.data, hld.metadata );
+  { fprintf( stderr, "Inizializing Data (optional) %s Meta %s\n", hld.data, hld.metadata );
   }
 
 };
@@ -58,7 +80,7 @@ KEEP_LOADER( Aemet )
 Aemet * list= NULL;
 
 
- KEEPJSNLST( list );  // This does the job ( xml version )
+KEEPXML( list );  // This does the job ( xml version )
 
 
 int main( int argc, char ** argv )
@@ -66,9 +88,9 @@ int main( int argc, char ** argv )
   { puts( "yet created" );
   }
   else                   // Create a little test list
-  { list= new Aemet( list ); list->integer= 1; list->data= "Hello"; list->metadata= "World";
-    list= new Aemet( list ); list->integer= 2; list->data= "Hello"; list->metadata= "World";
-    list= new Aemet( list ); list->integer= 3; list->data= "Hello"; list->metadata= "World";
+  { list= nextObject( list, new Aemet( ) ); list->integer= 1;
+          nextObject( list, new Aemet( ) ); list->next->integer= 2;
+          nextObject( list, new Aemet( ) ); list->next->next->integer= 3;
   }
 
   list->integer++;

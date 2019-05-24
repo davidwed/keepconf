@@ -262,9 +262,9 @@ template <class T> Registrar< T > * findClassByName( const char * name )
 
 template <typename T>  ITEM_DONE loadObject( struct ObjConfRec & cnf, T & t );
 
-/* Default pointer walkers
+/* Default pointer walkers, return occupied address
  */
-//template <typename T> T * nextObject( T * ) { return( NULL ); }
+template <typename T> T * nextObject( T * , T * toAdd ) { return( toAdd ? toAdd : (T*)&xmlconfFlexSeed ); }
 
 struct ObjConfRec
 { int code;
@@ -473,58 +473,51 @@ struct ObjConfRec
     return( ITEM_VOID );
   }
 
-/* For heap objects
- */
-  template <class T> ITEM_DONE launch( T ** & t, const char * key )
+
+  template <class T> ITEM_DONE launch( T * & t, const char * key )
   { void load( ObjConfRec &, T & );
-    int idx; int els; T * ptr;
 
-    switch( code )
-    { case OBJECT_SAVE:               // SAVE version
-        els= 1; ptr= *t; while(( ptr= nextObject( ptr ) ))  // Figure out elements
-        { els++;
-        }
+    T * ptr= nextObject( t, (T*)NULL );
+    
+    { switch( code )
+      { case OBJECT_SAVE:                     // SAVE version
+          if (  ptr == (T*)&xmlconfFlexSeed ) // ASk for list or single object 
+          { save( *t, key, typeId( t ) );     // Same as allocated object
+          }
+          else                                // container or objects
+          { int idx= 0;
+            int els= 1;
 
-        idx= 0; ptr= *t; while( idx < els )
-        { enter( key, key, NULL, idx ? idx : -els );
-          load( *this, *ptr ); ptr= nextObject( ptr );
-          idx++;
-          leave( idx < els ? idx : 0  );
-        }
-      break;
+            ptr= t; while(( ptr= nextObject( ptr, (T*)NULL ) ))  // Figure out elements
+            { els++;
+            }
 
-      case OBJECT_LOAD:
-        if ( strcmp( info->names, key ))
-        { return( ITEM_NAMES );
-        }
+            ptr= t; while( idx < els )
+            { enter( key, key, NULL, idx ? idx : -els );
+              load( *this, *ptr ); ptr= nextObject( ptr, (T*)NULL );
+              idx++;
+              leave( idx < els ? idx : 0  );
+          } } 
+        return( ITEM_WRITTEN );
 
-        *t= new T( *t );                   // Must create on load, the parameter populates the list
-        info->holder= *t;                   // Tell engine also
-        info->loader= loadObjectCast<T>();
-      return( ITEM_LOADED );
+        case OBJECT_LOAD:
+          if ( strcmp( info->names, key ))
+          { return( ITEM_NAMES );
+          }
 
+          info->holder= new T( si );
+          info->loader= loadObjectCast<T>();
+          
+          if (( ptr= nextObject( t, (T*)info->holder ) ))  // Must create on load, the parameter populates the list
+          { t= ptr;
+          } 
+        return( ITEM_LOADED );
     }
     return( ITEM_VOID );
   }
 
-  template <class T> ITEM_DONE launch( T * & t, const char * key )
-  {
 
-    switch( code )
-    { case OBJECT_SAVE:               // SAVE version
-        save( *t, key, typeId( t ) ); // Same as allocated object
-      break;
 
-      case OBJECT_LOAD:
-        if ( strcmp( info->names, key ))
-        { return( ITEM_NAMES );
-        }
-
-        t= new T( si );                    // Must create on load
-        info->holder= t;                   // Tell engine also
-        info->loader= loadObjectCast<T>();
-      return( ITEM_LOADED );
-    }
     return( ITEM_VOID );
   }
 
@@ -833,6 +826,8 @@ template < typename T > int copy( T & toLoad,  const char * varName
     #define TYPEOF typeof
   #else
     #undef CAP_TYPEOF
+    #define TYPEOF decltype
+    #define CAP_TYPEOF 1
   #endif
 #else
   #define TYPEOF decltype
@@ -842,21 +837,19 @@ template < typename T > int copy( T & toLoad,  const char * varName
 
 #define LOADXML( var, ... ) copy(  var, #var, xmlLoad, ##__VA_ARGS__ )
 #define SAVEXML( var, ... ) copy( #var,  var, xmlSave, ##__VA_ARGS__ )
+#define KEEPXML( var ) ObjKeeper<TYPEOF(var)>XMLKEEP##var( var, #var, xmlLoad )
 
 #define LOADJSN( var, ... ) copy(  var, #var, jsnLoad, ##__VA_ARGS__ )
 #define SAVEJSN( var, ... ) copy( #var,  var, jsnSave, ##__VA_ARGS__ )
-
-#define LOADXMLLST( var, ... ) { TYPEOF(var) * tmp= &var; copy(  tmp, #var, xmlLoad, ##__VA_ARGS__ ); }
-#define SAVEXMLLST( var, ... ) { TYPEOF(var) * tmp= &var; copy( #var,  tmp, xmlSave, ##__VA_ARGS__ ); }
-
-#define LOADJSNLST( var, ... ) { TYPEOF(var) * tmp= &var; copy(  tmp, #var, jsnLoad, ##__VA_ARGS__ ); }
-#define SAVEJSNLST( var, ... ) { TYPEOF(var) * tmp= &var; copy( #var,  tmp, jsnSave, ##__VA_ARGS__ ); }
-
-
-#define KEEPXML( var ) ObjKeeper<TYPEOF(var)>XMLKEEP##var( var, #var, xmlLoad )
 #define KEEPJSN( var ) ObjKeeper<TYPEOF(var)>XMLKEEP##var( var, #var, jsnLoad )
-#define KEEPXMLLST( var ) TYPEOF(var) * tmpXMLKEEP##var= &var; ObjKeeper<TYPEOF(&var)>XMLKEEP##var( tmpXMLKEEP##var, #var, xmlLoad )
-#define KEEPJSNLST( var ) TYPEOF(var) * tmpXMLKEEP##var= &var; ObjKeeper<TYPEOF(&var)>XMLKEEP##var( tmpXMLKEEP##var, #var, jsnLoad )
+
+
+//#define LOADXMLLST( var, ... ) { TYPEOF(var) * tmp= &var; copy(  tmp, #var, xmlLoad, ##__VA_ARGS__ ); }
+//#define SAVEXMLLST( var, ... ) { TYPEOF(var) * tmp= &var; copy( #var,  tmp, xmlSave, ##__VA_ARGS__ ); }
+//#define LOADJSNLST( var, ... ) { TYPEOF(var) * tmp= &var; copy(  tmp, #var, jsnLoad, ##__VA_ARGS__ ); }
+//#define SAVEJSNLST( var, ... ) { TYPEOF(var) * tmp= &var; copy( #var,  tmp, jsnSave, ##__VA_ARGS__ ); }
+//#define KEEPXMLLST( var ) TYPEOF(var) * tmpXMLKEEP##var= &var; ObjKeeper<TYPEOF(&var)>XMLKEEP##var( tmpXMLKEEP##var, #var, xmlLoad )
+//#define KEEPJSNLST( var ) TYPEOF(var) * tmpXMLKEEP##var= &var; ObjKeeper<TYPEOF(&var)>XMLKEEP##var( tmpXMLKEEP##var, #var, jsnLoad )
 
 
 /* This trick allows to persist a bunch of global variables
