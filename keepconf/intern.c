@@ -142,33 +142,43 @@ int strcasecmp(const char *s1, const char *s2)
   return (tolower(*us1) - tolower(*--us2));
 }
 
+#define MAXL 32
+
 char *lltoa ( long long val, char * buf, int base )
-{ int i = 62;
+{ int i = MAXL;
   int sign = (val < 0);
   if (sign) val = -val;
 
-  if(val == 0) return "0";
+  if ( val == 0 ) return "0";
 
-  for(; val && i ; --i, val /= base) 
-  { buf[i] = "0123456789abcdef"[val % base];
+  for(
+     ; val && i
+     ; --i, val /= base)
+  { buf[i] = "0123456789ABCDEF"[val % base];
   }
 
-  if(sign) 
-  { buf[i--] = '-';
+  if(sign)
+  { buf[ i-- ] = '-';
   }
 
-  return &buf[i+1];
+  memcpy( buf, buf+i+1, MAXL-i ); buf[MAXL-i]= 0;
+
+  return( buf );
 }
 
 char *ulltoa ( unsigned long long val, char * buf, int base )
-{ int i = 62;
+{ int i = MAXL;
 
-  if (val == 0) return "0";
+  if ( val == 0 ) return "0";
 
-  for(; val && i ; --i, val /= base) 
-  { buf[i] = "0123456789abcdef"[val % base];
+  for(
+     ; val && i
+     ; --i, val /= base)
+  { buf[ i ]= "0123456789ABCDEF"[ val % base ];
   }
 
-  return &buf[i+1];
+  memcpy( buf, buf+i+1, MAXL-i ); buf[MAXL-i]= 0;
+
+  return( buf );
 }
 

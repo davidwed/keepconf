@@ -33,11 +33,16 @@
  */
 static int   counter= 0;
 const char * message= "hello";
-unsigned char   flag= 123;
+char   flag= -123;
 
 //KEEPXMLLIST( bunch )  // Comment out that and comment in next lilne an for xml version
 KEEPJSNLIST( bunch )
-{ KEEPGLOB( counter );
+{ //switch( cnf.code )
+  //{ case OBJECT_SAVE: printf("Saving    \n"            ); break;
+   // case OBJECT_LOAD: printf("Loading %s\n", cnf.value ); break;
+  //}
+
+  KEEPGLOB( counter );
   KEEPGLOB( message );
   KEEPGLOB( flag    );
 };
