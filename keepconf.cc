@@ -194,7 +194,7 @@ ANSIC const char * pushElement( ObjConfRec & cnf
  *                                                                            *
 \* ========================================================================= **/
 const char * asString( char * buff, const           bool w ) { return(  w ? "TRUE" : "FALSE" );    }
-const char * asString( char * buff, const           char w ) { return(   itoa( w, buff, RADIX )); }
+const char * asString( char * buff, const           char w ) { return(  lltoa( w, buff, RADIX )); }
 const char * asString( char * buff, const   signed  char w ) { return(   itoa( w, buff, RADIX )); }
 const char * asString( char * buff, const unsigned  char w ) { return( ulltoa( w, buff, RADIX )); }
 
